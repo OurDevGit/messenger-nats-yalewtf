@@ -1,0 +1,195 @@
+<img src = "./_docs_images/poocho_header.png">
+
+# poocho
+> This document is an outline for poocho | milestone one
+
+
+<img src = "./_docs_images/poocho_hr.png">
+
+
+
+# Dependencies
+
+> Please list any/all dependencies that we will be using here
+
+| Name       | Function                | URL                         |
+| ---------- | ----------------------- | --------------------------- |
+| React.JS   | Frontend                | https://reactjs.org/        |
+| Redux      | Middleware              | https://redux-saga.js.org/  |
+| Postgres   | Database                | https://www.postgresql.org/ |
+| Go         | Messaging Infrastucture | https://golang.org/         |
+| NATS       | Pub/Sub Messaging       | https://nats.io/            |
+| Amazon SES | Emails                  | https://aws.amazon.com/ses  |
+| Amazon SNS | Notifications/SMS       | https://aws.amazon.com/sns  |
+
+
+### 🌐 Domain Settings & Verified Services
+
+| Domain             | Purpose        | DNS        | AWS  | GSuite      | SES  | DKIM | Google MX  |
+| :----------------- | -------------- | :--------- | :--: | :---------- | :--: | :--: | :--------: |
+| `poocho.co`        | Main Homepage  | Cloudflare | ✓    | ✓ *primary* | ✓    | ✓    | ✓          |
+| `justpoocho.me`    | Client URLs    | Cloudflare | ✓    | ✓ *alias*   | ✓    | ✓    | ✓          |
+| `poocho.me`        | ShortURLs      | Cloudflare | ✓    | ✓ *alias*   | ✓    | ✓    | ✓          |
+
+
+#### DNS Checklist
+
+|   Feature   | Status |
+|-------------|--------|
+| DKIM        |        |
+| DNSSEC      |        |
+| SSL-Enabled |        |
+| Force HTTPS |        |
+
+
+<img src = "./_docs_images/poocho_hr.png">
+
+
+## 📧 Email Settings
+
+*  **poocho.co** is your primary domain
+*  *anything@poocho.co* will automatically get an email alias with *@justpoocho.me* and *@poocho.me*
+
+##### Transactional Emails 
+> These emails are setup as transactionals
+
+* hello@poocho.co ➜ administrator@poocho.co ➜ taapsi@poocho.co
+* hello@justpoocho.me ➜ administrator@poocho.co
+* hello@poocho.me ➜ administrator@poocho.co
+
+##### Global Email Routings
+> Gsuite > Settings for Gmail > Advanced Settings > **Default Routing** > Click on `ADD SETTING`
+
+|      Email Address       |       Destination       |
+|--------------------------|-------------------------|
+| *anything@poocho.co*     | administrator@poocho.co |
+| *anything@poocho.me*     | administrator@poocho.co |
+| *anything@justpoocho.me* | administrator@poocho.co |
+|                          |                         |
+| *noreply@poocho.co*      | administrator@poocho.co |
+| *noreply@poocho.me*      | administrator@poocho.co |
+| *noreply@justpoocho.me*  | administrator@poocho.co |
+
+
+###### Routing Settings:
+
+1. Specify envelope recipients to match
+	- Pattern Match  
+		- Regexp: **@poocho.me**
+2. Envelope Recipient
+	- Change Envelope Recipient
+		+ Replace recipient: **administrator@poocho.me**
+		+ Perform this action only on **non-recognized** addresses
+
+<img src = "./_docs_images/poocho_hr.png">
+
+
+## Setup Local Environment
+
+1. Install [Docker](https://hub.docker.com/editions/community/docker-ce-desktop-ma).
+2. Navigate to the root directory.
+3. Run `docker swarm init`. need run this command only first time.
+4. Run `chmod +x build.sh` to make it executable.
+5. Run with `./build.sh` to build docker images and start services
+
+##### 🦊 NOTE: you need to re-run `build.sh` whenever you change code.
+
+The **first time** you run the app, you need to create a database and re-launch the server:
+
+5. Run `PG_CONTAINER_ID=$(docker ps --filter name=messages-db --format "{{.ID}}")`
+6. Run `docker exec -ti $PG_CONTAINER_ID psql -U postgres -c "create database underdog;"`
+7. Run `docker service update --force underdog_apis`
+
+8. Run locally `docker-compose up --build`
+
+
+<img src = "./_docs_images/poocho_localhost.png">
+
+
+<img src = "./_docs_images/poocho_hr.png">
+
+## Setup Production Server
+
+> This will be scripted out later
+
+1. Create a new VM that's at least 1GB RAM & 1vPU
+2. Assign a static IP
+3. Run updates + Metrics with:
+
+```bash
+sudo apt update && sudo apt dist-upgrade -y && sudo apt autoremove -y		# update everything
+curl -sSL https://repos.insights.digitalocean.com/install.sh | sudo bash 	# digital ocean metrics
+sudo apt install docker.io docker-compose -y 									# install docker
+
+```
+
+4. Run `sudo nano .env` in the root and add
+
+```bash
+POSTGRES_HOST=messages-db
+POSTGRES_USER=postgres
+POSTGRES_PASS=postgres
+POSTGRES_DB=underdog
+AWS_REGION=us-east-2
+AWS_POOL_ID=us-east-2_rsbmdacWh
+AWS_CLIENT_ID=bcvrhji6fedel6itj43hnulon
+NATS_URL=nats://nats:4222
+API_PORT=5050
+```
+
+5. Run mkdir `client`
+6. Run `sudo nano .env`
+
+```bash
+REACT_APP_NATS_HOST = 159.89.244.165:4222
+REACT_APP_API_URL = http://159.89.244.165:5050
+```
+
+
+7. Run `docker swarm init  --advertise-addr 104.248.15.139` # Use system IP
+8. Run `chmod +x build.sh`
+9. Run `./build.sh`
+
+##### 🦊 NOTE: you need to re-run `build.sh` whenever you change code.
+
+The **first time** you run the app, you need to create a database and re-launch the server:
+
+10. Run `PG_CONTAINER_ID=$(docker ps --filter name=messages-db --format "{{.ID}}")`
+11. Run `docker exec -ti $PG_CONTAINER_ID psql -U postgres -c "create database underdog;"`
+12. Run `docker service update --force underdog_apis`
+
+13. Run locally `docker-compose up --build`
+
+
+# Servers
+
+https://www.justpoocho.me/ 				➜	
+
+https://staging.justpoocho.me/ 			➜	138.197.51.138
+
+https://dev.justpoocho.me/    			➜ 	159.89.244.165
+
+
+
+
+
+
+## Useful functions
+
+1. Run `docker system prune` to completely remove
+
+
+
+
+# Files & Purpose
+
+|          Filename          |          Purpose           |
+|----------------------------|----------------------------|
+| `/.env`                    | `development`              |
+| `/server/.env`             | `development & production` |
+| `/client/.env.production`  | `production`               |
+| `/docker-compose-prod.yml` | `production`               |
+| `/docker-compose.yml/`     | `development`              |
+
+
+

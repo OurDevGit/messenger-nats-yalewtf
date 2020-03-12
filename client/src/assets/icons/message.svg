@@ -1,0 +1,13 @@
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1">
+    <title>
+        grid
+    </title>
+    <g id="Master" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="grid" transform="translate(0, 0)" stroke="red">
+            <rect id="Rectangle" x="0" y="0" width="6.22222222" height="6.22222222"/>
+            <rect id="Rectangle" x="9.77777778" y="0" width="6.22222222" height="6.22222222"/>
+            <rect id="Rectangle" x="9.77777778" y="9.77777778" width="6.22222222" height="6.22222222"/>
+            <rect id="Rectangle" x="0" y="9.77777778" width="6.22222222" height="6.22222222"/>
+        </g>
+    </g>
+</svg>

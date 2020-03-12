@@ -1,0 +1,161 @@
+version: "3.5"
+
+services:
+  gateway:
+    ports:
+      - 8080:8080
+    image: functions/gateway:0.7.9
+    networks:
+      - functions
+    environment:
+      functions_provider_url: "http://faas-swarm:8080/"
+      read_timeout: "25s"
+      write_timeout: "25s"
+      upstream_timeout: "20s"
+      dnsrr: "true"
+      direct_functions: "true"
+      direct_functions_suffix: ""
+    deploy:
+      resources:
+        reservations:
+          memory: 100M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 20
+        window: 380s
+      placement:
+        constraints:
+          - "node.platform.os == linux"
+
+  faas-swarm:
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    image: functions/faas-swarm:0.2.3
+    networks:
+      - functions
+    environment:
+      read_timeout: "25s"
+      write_timeout: "25s"
+      DOCKER_API_VERSION: "1.30"
+    deploy:
+      placement:
+        constraints:
+          - "node.role == manager"
+          - "node.platform.os == linux"
+      resources:
+        reservations:
+          memory: 100M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 20
+        window: 380s
+
+  nats:
+    image: nats
+    networks:
+      - functions
+    ports:
+      - "8222:8222"
+    deploy:
+      resources:
+        limits:
+          memory: 125M
+        reservations:
+          memory: 50M
+      placement:
+        constraints:
+          - "node.platform.os == linux"
+
+  nats-proxy:
+    image: formalibre/ws-tcp-relay
+    command: "/go/bin/ws-tcp-relay nats:4222 -p 4223"
+    networks:
+      - functions
+    depends_on:
+      - nats
+    ports:
+      - "4222:4223"
+
+  api-test:
+    build: ./functions/api-test
+    volumes:
+      - ./functions/api-test:/root
+      - /root/node_modules
+    labels:
+      function: "true"
+    networks:
+      - functions
+    environment:
+      no_proxy: "gateway"
+      https_proxy: $https_proxy
+    env_file:
+      - .env
+    deploy:
+      placement:
+        constraints:
+          - "node.platform.os == linux"
+
+  messages-db:
+    image: postgres:latest
+    networks:
+      - functions
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  apis:
+    build: "./server"
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules/
+    working_dir: /usr/src/app
+    command: yarn dev
+    networks:
+      - functions
+    env_file:
+      - .env
+    depends_on:
+      - messages-db
+      - nats
+    ports:
+      - "5050:5050"
+    restart: "always"
+    deploy:
+      placement:
+        constraints:
+          - "node.platform.os == linux"
+
+  front-end:
+    build: "./client"
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules/
+    working_dir: /usr/src/app
+    command: yarn start
+    networks:
+      - functions
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_NATS_HOST=localhost:4222
+      - REACT_APP_API_URL=http://localhost:5050
+    depends_on:
+      - nats
+      - apis
+    ports:
+      - "3000:3000"
+    restart: "always"
+    deploy:
+      placement:
+        constraints:
+          - "node.platform.os == linux"
+
+networks:
+  functions:
+    driver: overlay
+    attachable: true
+    labels:
+      - "openfaas=true"
