@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Form, Icon, Input, Checkbox } from "antd";
+import { Form, Icon, Input, Checkbox, Divider } from "antd";
 import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
@@ -17,7 +17,8 @@ import {
   SignupButton,
   LoginButton,
   ActionCont,
-  ForgotButton
+  ForgotButton,
+  SocialButton
 } from "./styled";
 
 const LoginForm = ({ form, userLogin, history }) => {
@@ -38,6 +39,11 @@ const LoginForm = ({ form, userLogin, history }) => {
 
   return (
     <Container>
+      <LogoWrapper>
+        <Image />
+        <AppLogo top={20} right={20} />
+        <PoochoLogo />
+      </LogoWrapper>
       <FormWrapper>
         <AppLogo top={20} right={20} />
         <div className="login-form-container">
@@ -68,9 +74,17 @@ const LoginForm = ({ form, userLogin, history }) => {
                 />
               )}
             </FormItem>
+            <div style={{position:'relative'}}>
+            <FormItem className="remember-me">
+              {getFieldDecorator("remember", {
+                valuePropName: "checked",
+                initialValue: true
+              })(<Checkbox style={{display:'block'}}>Remember me</Checkbox>)}
+            </FormItem>
             <ForgotButton>
               <span className="forgot-button">Forgot password?</span>
             </ForgotButton>
+            </div>
             <ActionCont>
               <SignupButton type="primary" onClick={handleClickRegister}>
                 Register
@@ -79,20 +93,24 @@ const LoginForm = ({ form, userLogin, history }) => {
                 Log in
               </LoginButton>
             </ActionCont>
-            <FormItem className="remember-me">
-              {getFieldDecorator("remember", {
-                valuePropName: "checked",
-                initialValue: true
-              })(<Checkbox>Remember me</Checkbox>)}
-            </FormItem>
+
+            <Divider>Or</Divider>
+            <ActionCont>
+              <SocialButton type="primary">
+              <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} />
+                Sign in with Google
+              </SocialButton>
+            </ActionCont>
+            <ActionCont>
+              <SocialButton type="primary">
+                <Icon type="apple" filled />
+                Sign in with Apple
+              </SocialButton>
+            </ActionCont>
           </Form>
         </div>
       </FormWrapper>
-      <LogoWrapper>
-        <Image />
-        <AppLogo top={20} right={20} />
-        <PoochoLogo />
-      </LogoWrapper>
+
     </Container>
   );
 };

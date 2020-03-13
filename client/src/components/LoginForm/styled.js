@@ -12,12 +12,13 @@ export const Container = styled.div`
 export const FormWrapper = styled.div`
   flex: 1;
   position: relative;
-
+  
   & .login-form {
     width: 350px;
   }
 
   & .login-form-container {
+    margin: 0 auto;
     width: ${({ theme }) => theme.login.formWrapperWidth || "auto"};
     background: ${({ theme }) => theme.login.formWrapperBgColor};
     box-shadow: ${({ theme }) => theme.login.formWrapperBoxShaw};
@@ -27,11 +28,16 @@ export const FormWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
+    // position: absolute;
     top: 50%;
-    left: ${({ theme }) => theme.login.formWrapperLeft};
-    transform: ${({ theme }) => `translate(-${theme.login.formWrapperLeft}, -50%)`};
+    // left: ${({ theme }) => theme.login.formWrapperRight};
+    transform: ${({ theme }) => `translate(0, -50%)`};
+    @media (max-width: ${({ theme }) => theme.brackPoints.md}) {
+      width:100%;
+      background:transparent
+    }
   }
+
 `;
 
 export const PoochoFormTitle = styled.h3`
@@ -84,7 +90,7 @@ export const ActionCont = styled(Form.Item)`
 `;
 const StyledButton = styled(Button)`
   height: 36px;
-  width: 156px;
+  width: 175px;
   border-radius: 30px;
   position: relative;
   background-clip: padding-box;
@@ -100,6 +106,17 @@ const StyledButton = styled(Button)`
     z-index: -1;
     border-radius: inherit;
     background: ${({ theme }) => theme.global.gradient};
+  }
+`;
+
+export const SocialButton = styled(StyledButton)`
+  background: ${({ theme }) => theme.global.white};
+  color: gray;
+  margin:0 auto;
+  &:hover,
+  &:active,
+  &:focus {
+    // background: ${({ theme }) => theme.global.gradient};
   }
 `;
 
@@ -137,11 +154,17 @@ export const ForgotButton = styled.div`
   position: relative;
   margin-bottom: 20px;
   min-height: 24px;
-
+  position: ${({ theme }) => theme.login.forgotBtnPos};
+  right: ${({ theme }) => theme.login.forgotBtnRight};
+  top: 0px;
+  padding: 10px;
   & .forgot-button {
-    position: ${({ theme }) => theme.login.forgotBtnPos};
-    right: ${({ theme }) => theme.login.forgotBtnRight};
-    top: 0px;
+    // position: ${({ theme }) => theme.login.forgotBtnPos};
+    // right: ${({ theme }) => theme.login.forgotBtnRight};
+    // top: 0px;
+  }
+  @media (max-width: ${({ theme }) => theme.brackPoints.md}) {
+    // color: white
   }
 `;
 

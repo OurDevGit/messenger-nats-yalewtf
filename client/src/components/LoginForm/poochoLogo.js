@@ -30,7 +30,7 @@ const PoochoLogoContainer = styled.div`
 
   & .logo-content {
     text-align: center;
-    margin-right: 80px;
+    margin: 0 auto;
 
     & .description {
       max-width: 420px;

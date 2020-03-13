@@ -110,7 +110,7 @@ const StyledButton = styled(Button)`
 export const SignupButton = styled(StyledButton)`
   background: ${({ theme }) => theme.global.white};
   color: ${({ theme }) => theme.login.signupColor};
-
+  margin:0 auto;
   &:hover,
   &:active,
   &:focus {
@@ -148,4 +148,11 @@ export const Image = styled.img.attrs(() => ({ src: meetingImage, draggable: fal
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+`;
+
+export const ErrorDiv = styled.span`
+  // position: absolute;
+  // left: 0;
+  // top: 20px;
+  color: #f5222d;
 `;
