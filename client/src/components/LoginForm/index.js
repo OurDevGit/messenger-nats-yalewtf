@@ -1,10 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Form, Icon, Input, Checkbox, Divider } from "antd";
+import {
+  AppleFilled
+} from '@ant-design/icons';
 import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
 import FormItem from "../FormItem";
+import GoogleIcon from "../../assets/icons/google.js"
 
 import {
   Container,
@@ -97,13 +101,14 @@ const LoginForm = ({ form, userLogin, history }) => {
             <Divider>Or</Divider>
             <ActionCont>
               <SocialButton type="primary">
-              <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} />
+              {/* <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} /> */}
+              <GoogleIcon />
                 Sign in with Google
               </SocialButton>
             </ActionCont>
             <ActionCont>
               <SocialButton type="primary">
-                <Icon type="apple" filled />
+                <Icon type="apple" theme='filled' />
                 Sign in with Apple
               </SocialButton>
             </ActionCont>

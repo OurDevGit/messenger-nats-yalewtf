@@ -12,7 +12,7 @@ export const Container = styled.div`
 export const FormWrapper = styled.div`
   flex: 1;
   position: relative;
-  
+  font-family:Aleo;
   & .login-form {
     width: 350px;
   }
@@ -41,6 +41,7 @@ export const FormWrapper = styled.div`
 `;
 
 export const PoochoFormTitle = styled.h3`
+  font-family:Aleo;
   font-size: 24px;
   text-align: center;
   letter-spacing: 1.33px;
@@ -90,7 +91,7 @@ export const ActionCont = styled(Form.Item)`
 `;
 const StyledButton = styled(Button)`
   height: 36px;
-  width: 175px;
+  width: 200px;
   border-radius: 30px;
   position: relative;
   background-clip: padding-box;
@@ -105,7 +106,8 @@ const StyledButton = styled(Button)`
     left: -2px;
     z-index: -1;
     border-radius: inherit;
-    background: ${({ theme }) => theme.global.gradient};
+    // background: ${({ theme }) => theme.global.gradient};
+    background: black;
   }
 `;
 
@@ -117,6 +119,19 @@ export const SocialButton = styled(StyledButton)`
   &:active,
   &:focus {
     // background: ${({ theme }) => theme.global.gradient};
+  }
+  & .google {
+    width:15px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+  }
+  & i.anticon-apple {
+    font-size:17px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color:black
   }
 `;
 
@@ -173,7 +188,8 @@ export const LogoWrapper = styled.div`
   position: relative;
   background: ${({ theme }) => theme.login.rightBgColor};
   height: 100%;
-
+  font-family: Aleo;
+  font-weight:bold;
   @media (max-width: ${({ theme }) => theme.brackPoints.md}) {
     display: none;
   }
