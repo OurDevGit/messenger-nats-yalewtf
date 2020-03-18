@@ -203,3 +203,7 @@ export const Image = styled.img.attrs(() => ({ src: meetingImage, draggable: fal
   left: 50%;
   transform: translate(-50%, -50%);
 `;
+export const ErrorDiv = styled.div`
+  color: #f5222d;
+  text-align: center
+`;

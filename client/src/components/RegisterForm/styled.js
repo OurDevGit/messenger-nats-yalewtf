@@ -88,7 +88,7 @@ export const ActionCont = styled(Form.Item)`
 `;
 const StyledButton = styled(Button)`
   height: 36px;
-  width: 156px;
+  width: 200px;
   border-radius: 30px;
   position: relative;
   background-clip: padding-box;
@@ -104,6 +104,30 @@ const StyledButton = styled(Button)`
     z-index: -1;
     border-radius: inherit;
     background: ${({ theme }) => theme.global.gradient};
+  }
+`;
+
+export const SocialButton = styled(StyledButton)`
+  background: ${({ theme }) => theme.global.white};
+  color: gray;
+  margin:0 auto;
+  &:hover,
+  &:active,
+  &:focus {
+    // background: ${({ theme }) => theme.global.gradient};
+  }
+  & .google {
+    width:15px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+  }
+  & i.anticon-apple {
+    font-size:17px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color:black
   }
 `;
 

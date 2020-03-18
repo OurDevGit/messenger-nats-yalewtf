@@ -1,7 +1,7 @@
 import { takeLatest, takeEvery, put, call, select } from "redux-saga/effects";
 import { userApi, messageApi } from "../../utils/api";
 import { storeToken, getToken } from "../../utils/tokenStore";
-
+import {notification} from 'antd'
 import {
   USER_LOGIN_REQUEST,
   userLoginFailureAction,
@@ -23,8 +23,16 @@ function* loginUserSaga(action) {
     const response = yield call(userApi.login, action.payload);
     storeToken(response);
     yield put({ type: FETCH_ME_REQUEST });
+    notification.success({
+      message: 'Poocho_Messenger',
+      description: "Successfully logined to poocho messenger",          
+    });
   } catch (e) {
     yield put(userLoginFailureAction(e));
+    notification.error({
+      message: 'Poocho_Messenger',
+      description: e.data.message,          
+    });
   }
 }
 
@@ -32,8 +40,16 @@ function* signupSaga(action) {
   try {
     const response = yield call(userApi.register, action.payload);
     yield put(userSignupSuccessAction(response));
+    notification.success({
+      message: 'Poocho_Messenger',
+      description: "Your account has been created! Please check your email",          
+    });
   } catch (e) {
     yield put(userSignupFailureAction(e));
+    notification.error({
+      message: 'Poocho_Messenger',
+      description: e.data.message,          
+    });
   }
 }
 

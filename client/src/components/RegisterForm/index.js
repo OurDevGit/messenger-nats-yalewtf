@@ -1,9 +1,11 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
-import { Form, Icon, Input } from "antd";
+import { Form, Icon, Input, notification } from "antd";
 import AppLogo from "../AppLogo";
 import routes from "../../constants/routes";
-
+import { userSignupRequestAction } from "../../store/actions/users";
+import { connect } from "react-redux";
+import GoogleIcon from "../../assets/icons/google.js"
 import {
   Container,
   FormWrapper,
@@ -14,17 +16,17 @@ import {
   SignupButton,
   LoginButton,
   ActionCont,
+  SocialButton,
   ErrorDiv,
 } from "./styled";
 
-const RegisterForm = ({ form, userSignup, history }) => {
-  const { getFieldDecorator, validateFields, getFieldValue } = form;
+const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoading}) => {
+  const { getFieldDecorator, validateFields } = form;
 
   const handleSubmit = e => {
     e.preventDefault();
     var flag = true;
     validateFields((err, values) => {
-      console.log(values)
       if(values.password && values.confirmPassword)
       {
         if(values.password != values.confirmPassword)
@@ -36,13 +38,19 @@ const RegisterForm = ({ form, userSignup, history }) => {
           setPassMathingErroFlag(true)
           setPassStrongErrorFlag(validateStrongPassword(values.password))
         }
-        console.log(validateStrongPassword(values.password))
+        values.username=values.email.replace(/@/g,"-").replace(/\./g, "_");
       }
       if (!err && flag == true) {
         userSignup(values);
       }
     });
   };
+
+  useEffect(()=>{
+    if(AuthFlag){
+      history.push(routes.LOGIN);
+    }
+  })
 
   const validateStrongPassword = (password) => {
     var matchedCase = new Array();
@@ -56,13 +64,16 @@ const RegisterForm = ({ form, userSignup, history }) => {
             ctr++;
         }
     }
-    if(ctr == 4)
+    if(password.length >7)
+    {
+      ctr++;
+    }
+    if(ctr == 5)
     {
       return true
     }else{
       return false
     }
-    console.log(ctr)
   }
   const [PassStrongErroFlag, setPassStrongErrorFlag] =  useState(true);
   const [PassMathingErroFlag, setPassMathingErroFlag] =  useState(true);
@@ -83,10 +94,10 @@ const RegisterForm = ({ form, userSignup, history }) => {
           <FormTitle>Create your account</FormTitle>
 
           <Form.Item label="Username(your email)">
-            {getFieldDecorator("username", {
-              rules: [{ required: true, message: "Please input your Username or Email!" }]
+            {getFieldDecorator("email", {
+              rules: [{ required: true, message: "Please input your Email!" }]
             })(<Input placeholder="Your username or Email" />)}
-            <ErrorDiv hidden={true}>The two passwords that you entered do not match!</ErrorDiv>
+            <ErrorDiv>{FailedMsg}</ErrorDiv>
           </Form.Item>
 
           <Form.Item label="First Name">
@@ -110,7 +121,7 @@ const RegisterForm = ({ form, userSignup, history }) => {
                 placeholder="Password"
               />
             )}
-            <ErrorDiv hidden={PassStrongErroFlag}>Include Special Charector, Uppercase and Lowercase Alpabates, Numbers</ErrorDiv>
+            <ErrorDiv hidden={PassStrongErroFlag}>Include Special Charector, Uppercase and Lowercase Alpabates, Numbers, minLength is 8</ErrorDiv>
           </Form.Item>
 
           <Form.Item label="Confirm Password">
@@ -130,10 +141,27 @@ const RegisterForm = ({ form, userSignup, history }) => {
             <ErrorDiv hidden={PassMathingErroFlag}>The two passwords that you entered do not match!</ErrorDiv>
           </Form.Item>
           <ActionCont>
-            <SignupButton type="primary" htmlType="submit">
+            <SignupButton type="primary" htmlType="submit" loading={AuthLoading}>
               SigntUp
             </SignupButton>
           </ActionCont>
+          <ActionCont>
+            <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Google&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
+            <SocialButton type="primary">
+            {/* <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} /> */}
+            <GoogleIcon />
+              Sign in with Google
+            </SocialButton>
+            </a>
+          </ActionCont>
+          <ActionCont>
+            <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Apple&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
+            <SocialButton type="primary">
+              <Icon type="apple" theme='filled' />
+              Sign in with Apple
+            </SocialButton>
+              </a>
+          </ActionCont>         
         </Form>
       </FormWrapper>
     </Container>
@@ -145,5 +173,15 @@ RegisterForm.propTypes = {
   userSignup: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
+const mapStateToProps = state => ({
+  FailedMsg: state.users.FailedMsg,
+  loading: state.users.loading,
+  AuthFlag: state.users.AuthFlag,
+  AuthLoading: state.users.AuthLoading
+});
 
-export default Form.create({ name: "normal_login" })(RegisterForm);
+const mapDispatchToProps = {
+  userSignupRequest: userSignupRequestAction
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: "normal_login" })(RegisterForm));

@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import { Form, Icon, Input, Checkbox, Divider } from "antd";
 import {
   AppleFilled
@@ -9,6 +10,7 @@ import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
 import FormItem from "../FormItem";
 import GoogleIcon from "../../assets/icons/google.js"
+import { userSignupRequestAction, userLoginFailureAction } from "../../store/actions/users";
 
 import {
   Container,
@@ -22,10 +24,27 @@ import {
   LoginButton,
   ActionCont,
   ForgotButton,
-  SocialButton
+  SocialButton,
+  ErrorDiv
 } from "./styled";
+// import Amplify, { Auth } from 'aws-amplify';
+// const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 
-const LoginForm = ({ form, userLogin, history }) => {
+// Amplify.configure({
+//   Auth:{
+//     region: process.env.AWS_REGION,
+//     identityPoolRegion: process.env.AWS_REGION,
+//     userPoolId: process.env.AWS_POOL_ID,
+//     userPoolWebClientId: process.env.AWS_CLIENT_ID,
+//     oauth: {
+//       domain: 'poochodemo.auth.us-east-1.amazoncognito.com',
+//       redirectSignIn: 'http://localhost:3001/',
+//       redirectSignOut: 'http://localhost:3001/',
+//       responseType: 'token' // or 'token', note that REFRESH token will only be generated when the responseType is code
+//     }
+//   }
+// });
+const LoginForm = ({ form, userLogin, history , FailedMsg}) => {
   const { getFieldDecorator, validateFields } = form;
 
   const handleSubmit = e => {
@@ -59,6 +78,7 @@ const LoginForm = ({ form, userLogin, history }) => {
               <br /> welcome to poocho.
             </PoochoFormTitle>
             <FormItem label="E-Mail">
+              <ErrorDiv>{FailedMsg}</ErrorDiv>
               {getFieldDecorator("email", {
                 rules: [{ required: true, message: "Please input your email!" }]
               })(
@@ -100,17 +120,21 @@ const LoginForm = ({ form, userLogin, history }) => {
 
             <Divider>Or</Divider>
             <ActionCont>
+              <a href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Google&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
               <SocialButton type="primary">
               {/* <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} /> */}
               <GoogleIcon />
                 Sign in with Google
               </SocialButton>
+              </a>
             </ActionCont>
             <ActionCont>
+              <a href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Apple&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
               <SocialButton type="primary">
                 <Icon type="apple" theme='filled' />
                 Sign in with Apple
               </SocialButton>
+              </a>
             </ActionCont>
           </Form>
         </div>
@@ -126,4 +150,13 @@ LoginForm.propTypes = {
   history: PropTypes.object.isRequired
 };
 
-export default Form.create({ name: "normal_login" })(LoginForm);
+const mapStateToProps = state => ({
+  FailedMsg: state.users.FailedMsg,
+  loading: state.users.loading
+});
+
+const mapDispatchToProps = {
+  userLoginFailure: userLoginFailureAction
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: "normal_login" })(LoginForm));
