@@ -1,6 +1,8 @@
 import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Amplify, { Auth, Hub } from 'aws-amplify';
+import aws_config from '../../aws-exports.js'
 import { Form, Icon, Input, Checkbox, Divider } from "antd";
 import {
   AppleFilled
@@ -27,37 +29,9 @@ import {
   SocialButton,
   ErrorDiv
 } from "./styled";
-import Amplify, { Auth, Hub } from 'aws-amplify';
-const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 
-Amplify.configure({
-  // Auth:{
-  //   region: process.env.AWS_REGION,
-  //   identityPoolRegion: process.env.AWS_REGION,
-  //   userPoolId: process.env.AWS_POOL_ID,
-  //   userPoolWebClientId: process.env.AWS_CLIENT_ID,
-  //   oauth: {
-  //     domain: 'poochodemo.auth.us-east-1.amazoncognito.com',
-  //     redirectSignIn: 'http://localhost:3001/',
-  //     redirectSignOut: 'http://localhost:3001/',
-  //     responseType: 'token' // or 'token', note that REFRESH token will only be generated when the responseType is code
-  //   }
-  // }
-  Auth:{
-    region: "us-east-1",
-    identityPoolRegion: "us-east-1",
-    userPoolId: "us-east-1_Qccxby2tn",
-    userPoolWebClientId: "5foo8qktllsqfd8c91kh7bq8i6",
-    oauth: {
-      domain: 'poochodemo.auth.us-east-1.amazoncognito.com',
-      redirectSignIn: 'http://localhost:3000/',
-      // redirectSignOut: 'http://localhost:3001/',
-      responseType: 'token', // or 'token', note that REFRESH token will only be generated when the responseType is code
-      // grant_type:"authorization_code",
-      scope: ["email", "profile"]
-    }
-  }
-});
+Amplify.configure(aws_config);
+
 const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, location}) => {
   const { getFieldDecorator, validateFields } = form;
 
@@ -162,12 +136,14 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, locatio
               {/* </a> */}
             </ActionCont>
             <ActionCont>
-              <a href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Apple&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
-              <SocialButton type="primary">
+              {/* <a href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=SignInWithApple&redirect_uri=http://localhost:3000&response_type=TOKEN&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email%20openid%20profile"> */}
+              <SocialButton type="primary" onClick={()=>{
+                Auth.federatedSignIn({provider: "SignInWithApple"})
+              }}>
                 <Icon type="apple" theme='filled' />
                 Sign in with Apple
               </SocialButton>
-              </a>
+              {/* </a> */}
             </ActionCont>
           </Form>
         </div>

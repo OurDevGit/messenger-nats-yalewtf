@@ -5,6 +5,8 @@ import AppLogo from "../AppLogo";
 import routes from "../../constants/routes";
 import { userSignupRequestAction } from "../../store/actions/users";
 import { connect } from "react-redux";
+import Amplify, { Auth, Hub } from 'aws-amplify';
+import aws_config from '../../aws-exports.js'
 import GoogleIcon from "../../assets/icons/google.js"
 import {
   Container,
@@ -19,7 +21,7 @@ import {
   SocialButton,
   ErrorDiv,
 } from "./styled";
-
+Amplify.configure(aws_config);
 const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoading}) => {
   const { getFieldDecorator, validateFields } = form;
 
@@ -146,21 +148,25 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
             </SignupButton>
           </ActionCont>
           <ActionCont>
-            <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Google&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
-            <SocialButton type="primary">
+            {/* <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Google&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email"> */}
+            <SocialButton type="primary" onClick={()=>{
+                Auth.federatedSignIn({provider: "Google"})
+              }}>
             {/* <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} /> */}
             <GoogleIcon />
               Sign in with Google
             </SocialButton>
-            </a>
+            {/* </a> */}
           </ActionCont>
           <ActionCont>
-            <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Apple&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email">
-            <SocialButton type="primary">
+            {/* <a style={{"margin":"0 auto"}} href="https://poochodemo.auth.us-east-1.amazoncognito.com/oauth2/authorize?identity_provider=Apple&response_type=CODE&client_id=5foo8qktllsqfd8c91kh7bq8i6&scope=email"> */}
+            <SocialButton type="primary" onClick={()=>{
+                Auth.federatedSignIn({provider: "SignInWithApple"})
+              }}>
               <Icon type="apple" theme='filled' />
               Sign in with Apple
             </SocialButton>
-              </a>
+              {/* </a> */}
           </ActionCont>         
         </Form>
       </FormWrapper>

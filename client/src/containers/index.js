@@ -25,7 +25,6 @@ const AppRoutes = ({ fetchMe, loading, theme, location }) => {
    * fetch logged user on reloading page
    */
   useEffect(() => {
-    console.log("loca",window.location.pathname)
     fetchMe("fetch me");
   }, [fetchMe]);
 

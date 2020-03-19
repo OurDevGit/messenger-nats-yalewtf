@@ -38,13 +38,17 @@ function* loginUserSaga(action) {
 
 function* signupSaga(action) {
   try {
-    
     const response = yield call(userApi.register, action.payload);
-    yield put(userSignupSuccessAction(response));
-    notification.success({
-      message: 'Poocho_Messenger',
-      description: "Your account has been created! Please check your email",          
-    });
+    if(response.user_type == "aws_social"){
+      yield put({ type: FETCH_ME_REQUEST });
+    }else{
+      yield put(userSignupSuccessAction(response));
+      notification.success({
+        message: 'Poocho_Messenger',
+        description: "Your account has been created! Please check your email",          
+      });
+    }
+    
   } catch (e) {
     yield put(userSignupFailureAction(e));
     notification.error({
