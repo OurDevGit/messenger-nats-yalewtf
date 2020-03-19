@@ -25,7 +25,7 @@ export const initialState = {
 
 const usersReducer = createReducer(initialState, {
   [USER_SIGN_UP_REQUEST]: (state) => {
-    // state.AuthLoading = true;
+    state.AuthLoading = true;
   },
   [USER_SIGN_UP_SUCCESS]: (state) => {
     state.AuthLoading = false;

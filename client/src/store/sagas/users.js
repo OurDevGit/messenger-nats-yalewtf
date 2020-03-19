@@ -38,6 +38,7 @@ function* loginUserSaga(action) {
 
 function* signupSaga(action) {
   try {
+    
     const response = yield call(userApi.register, action.payload);
     yield put(userSignupSuccessAction(response));
     notification.success({

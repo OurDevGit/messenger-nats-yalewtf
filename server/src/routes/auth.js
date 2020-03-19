@@ -14,21 +14,32 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  CognitoService.register(req.body, async function(err, result) {
-    if (err) {
-      return res.status(400).send(err);
-    }
-
+  if(!req.body.social)
+  {
+    CognitoService.register(req.body, async function(err, result) {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      const user = await req.context.models.User.create({
+        username: result.username.toLowerCase(),
+        first_name: req.body.given_name,
+        last_name: req.body.family_name,
+        email: req.body.email,
+        user_type: 'aws',
+      });
+  
+      res.send(user);
+    });
+  }else{
     const user = await req.context.models.User.create({
-      username: result.username.toLowerCase(),
+      username: req.body.username.toLowerCase(),
       first_name: req.body.given_name,
       last_name: req.body.family_name,
       email: req.body.email,
-      user_type: 'aws',
+      user_type: 'aws_social',
     });
-
-    res.send(user);
-  });
+    return res.send(user)
+  }
 });
 
 router.post('/confirm', async (req, res) => {

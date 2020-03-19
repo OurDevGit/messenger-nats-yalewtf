@@ -141,7 +141,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
             <ErrorDiv hidden={PassMathingErroFlag}>The two passwords that you entered do not match!</ErrorDiv>
           </Form.Item>
           <ActionCont>
-            <SignupButton type="primary" htmlType="submit" loading={AuthLoading}>
+            <SignupButton type="primary" htmlType="submit" >
               SigntUp
             </SignupButton>
           </ActionCont>

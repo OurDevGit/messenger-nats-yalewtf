@@ -20,11 +20,12 @@ import { fetchMeRequestAction } from "../store/actions/users";
 /**
  * Switch managing routing throughout application.
  */
-const AppRoutes = ({ fetchMe, loading, theme }) => {
+const AppRoutes = ({ fetchMe, loading, theme, location }) => {
   /**
    * fetch logged user on reloading page
    */
   useEffect(() => {
+    console.log("loca",window.location.pathname)
     fetchMe("fetch me");
   }, [fetchMe]);
 
