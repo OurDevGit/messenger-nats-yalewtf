@@ -8,13 +8,22 @@ import {
   USER_SIGN_UP_REQUEST,
   userSignupSuccessAction,
   userSignupFailureAction,
+  USER_SIGN_OUT_REQUEST,
+  userSignoutSuccessAction,
+  userSignoutFailureAction,
+  USER_RESETPASS_REQUEST,
+  userResetpassSuccessAction,
+  userResetpassFailureAction,
+  USER_CONFIRMPASS_REQUEST,
+  userConfirmpassSuccessAction,
+  userConfirmpassFailureAction,
   FETCH_ME_REQUEST,
   fetchMeFailureAction,
   fetchMeSuccessAction,
   FETCH_USERS_REQUEST,
   fetchUsersSuccessAction,
   fetchUsersFailureAction,
-  SELECT_USER
+  SELECT_USER,
 } from "../actions/users";
 import { receivedPrevMessages } from "../actions/messages";
 
@@ -58,6 +67,50 @@ function* signupSaga(action) {
   }
 }
 
+function* signoutSaga(action) {
+  try {
+    const response = yield call(userApi.signout, action.payload);
+    yield put(userSignoutSuccessAction(response));
+    storeToken(null);
+    notification.success({
+      message: 'Poocho_Messenger',
+      description: "You are logout",          
+    });
+  } catch (e) {
+    yield put(userSignoutFailureAction(e));
+    notification.error({
+      message: 'Poocho_Messenger',
+      description: e.data.message,
+    });
+  }
+}
+
+function* resetpassSaga(action) {
+  try{
+    const response = yield call(userApi.resetpass, action.payload);
+    yield put( userResetpassSuccessAction(response));
+  } catch(e) {
+    yield put( userResetpassFailureAction(e));
+  }
+}
+
+function* confirmpassSaga(action) {
+  try{
+    const response = yield call(userApi.confirmpass, action.payload);
+    yield put( userConfirmpassSuccessAction(response));
+    notification.success({
+      message: 'Poocho_Messenger',
+      description: "Your password changed succcessfully. Please Login with your new password",          
+    });
+  } catch(e) {
+    yield put( userConfirmpassFailureAction(e) );
+    notification.error({
+      message: 'Poocho_Messenger',
+      description: e.data.message,          
+    });
+  }
+}
+
 function* fetchMe() {
   try {
     const token = getToken();
@@ -67,8 +120,8 @@ function* fetchMe() {
     } else {
       yield put(fetchMeFailureAction("you should login to app"));
     }
-  } catch (error) {
-    yield put(fetchMeFailureAction(error));
+  } catch (e) {
+    yield put(fetchMeFailureAction(e));
   }
 }
 
@@ -97,6 +150,9 @@ function* fetchPreMessage(action) {
 export default function*() {
   yield takeLatest(USER_LOGIN_REQUEST, loginUserSaga);
   yield takeLatest(USER_SIGN_UP_REQUEST, signupSaga);
+  yield takeLatest(USER_SIGN_OUT_REQUEST, signoutSaga);
+  yield takeLatest(USER_RESETPASS_REQUEST, resetpassSaga);
+  yield takeLatest(USER_CONFIRMPASS_REQUEST, confirmpassSaga);
   yield takeLatest(FETCH_ME_REQUEST, fetchMe);
   yield takeEvery(FETCH_USERS_REQUEST, fetchUsers);
   yield takeEvery(SELECT_USER, fetchPreMessage);

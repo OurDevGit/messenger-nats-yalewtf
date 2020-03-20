@@ -9,7 +9,7 @@ import AuthenticatedRoute from "./AuthenticatedRoute";
 import Login from "./Login";
 import Register from "./Register";
 import Messenger from "./Messenger";
-
+import Confirm from './Confirm'
 import Apploading from "../components/AppLoading";
 
 import themes from "../themes";
@@ -39,6 +39,7 @@ const AppRoutes = ({ fetchMe, loading, theme, location }) => {
         <AuthenticatedRoute exact path={routes.MESSAGE} component={Messenger} />
         <AuthenticatedRoute exact path={routes.SIGNUP} component={Register} />
         <AuthenticatedRoute exact path={routes.HOME} component={Messenger} />
+        <AuthenticatedRoute exact path={routes.CONFIRM} component={Confirm} />
       </Switch>
     </ThemeProvider>
   );

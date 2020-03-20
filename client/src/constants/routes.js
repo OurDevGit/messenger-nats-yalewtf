@@ -2,5 +2,6 @@ export default {
   HOME: "/",
   LOGIN: "/login",
   SIGNUP: "/signup",
-  MESSAGE: "/message"
+  MESSAGE: "/message",
+  CONFIRM: "/confirm"
 };

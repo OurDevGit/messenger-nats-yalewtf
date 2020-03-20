@@ -147,7 +147,7 @@ export const SignupButton = styled(StyledButton)`
   }
 `;
 
-export const LoginButton = styled(StyledButton)`
+export const ConfirmButton = styled(StyledButton)`
   background: ${({ theme }) => theme.login.loginBtnBgColor};
   border-radius: ${({ theme }) => theme.login.loginBtnRadius};
   color: ${({ theme }) => theme.login.loginBtnColor};

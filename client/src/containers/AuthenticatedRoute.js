@@ -33,7 +33,7 @@ const AuthenticatedRoute = ({ path, isAuthorized, token, component,location, ...
     }
     return <Route {...rest} path={path} component={WithLayout(component)} />;
   }
-  if (path === routes.LOGIN || path === routes.SIGNUP) {
+  if (path === routes.LOGIN || path === routes.SIGNUP || path === routes.CONFIRM) {
     return <Route {...rest} path={path} component={component} />;
   }
   return <Redirect to={routes.LOGIN} />;

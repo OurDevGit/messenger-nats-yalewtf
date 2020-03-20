@@ -6,11 +6,12 @@ import { Container, AppHeader, AppContent, AppSider, PageHeader } from "./styled
 
 import GridIcon from "../../assets/icons/grid";
 
-const AppLayout = ({ children }) => {
+const AppLayout = ({logout, children }) => {
+
   return (
     <Layout>
       <AppSider trigger={null} collapsible collapsed>
-        <SideNav />
+        <SideNav logout={logout} />
       </AppSider>
       <Container>
         <AppHeader>
@@ -26,7 +27,8 @@ const AppLayout = ({ children }) => {
 };
 
 AppLayout.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  logout: PropTypes.func.isRequired,
 };
 
 export default AppLayout;

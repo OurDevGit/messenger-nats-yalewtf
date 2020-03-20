@@ -85,8 +85,73 @@ const confirmCode = (body, callback) => {
   });
 };
 
+const emailAvailable = (body, callback) =>{
+  const {email} =  body;
+  const userData = {
+    Username: email,
+    Pool: userPool,
+  };
+  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  cognitoUser.getUserData(function(err, result){
+    if (err) {
+      callback(err);
+      return;
+    }
+    callback(null, result);
+  }, { bypassCache: true })
+}
+
+const resetpass = (body, callback) =>{
+  const {email} =  body;
+  const userData = {
+    Username: email,
+    Pool: userPool,
+  };
+  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  cognitoUser.forgotPassword({
+    onSuccess: function(result){
+      const Sentemail = email
+      callback(null, {Sentemail})
+    },
+    onFailure: function(err){
+      callback(err)
+    }
+  })
+}
+
+const confirmpass = (body, callback) =>{
+  const {email, verificationCode, newPassword} =  body;
+  const userData = {
+    Username: email,
+    Pool: userPool,
+  };
+  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  cognitoUser.confirmPassword(verificationCode, newPassword, {
+    onSuccess: function(result){
+      callback(null, result)
+    },
+    onFailure: function(err){
+      callback(err)
+    }
+  })
+}
+
+const signout = (body) =>{
+  const {email} =  body;
+  const userData = {
+    Username: email,
+    Pool: userPool,
+  };
+  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  cognitoUser.signOut();
+}
+
 export default {
   register,
   login,
   confirmCode,
+  resetpass,
+  confirmpass,
+  emailAvailable,
+  signout
 };

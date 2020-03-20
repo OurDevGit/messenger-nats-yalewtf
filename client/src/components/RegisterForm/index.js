@@ -97,7 +97,9 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
 
           <Form.Item label="Username(your email)">
             {getFieldDecorator("email", {
-              rules: [{ required: true, message: "Please input your Email!" }]
+              rules: [{ required: true, message: "Please input your email!" },
+                      { type: 'email', message: "Invalid email type" }  
+                    ]
             })(<Input placeholder="Your username or Email" />)}
             <ErrorDiv>{FailedMsg}</ErrorDiv>
           </Form.Item>

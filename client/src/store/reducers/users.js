@@ -3,7 +3,16 @@ import {
   USER_SIGN_UP_REQUEST,
   USER_SIGN_UP_FAILURE,
   USER_SIGN_UP_SUCCESS,
+  USER_SIGN_OUT_REQUEST,
+  USER_SIGN_OUT_FAILURE,
+  USER_SIGN_OUT_SUCCESS,
   USER_LOGIN_FAILURE,
+  USER_RESETPASS_REQUEST,
+  USER_RESETPASS_SUCCESS,
+  USER_RESETPASS_FAILURE,
+  USER_CONFIRMPASS_REQUEST,
+  USER_CONFIRMPASS_SUCCESS,
+  USER_CONFIRMPASS_FAILURE,
   FETCH_ME_REQUEST,
   FETCH_ME_SUCCESS,
   FETCH_ME_FAILURE,
@@ -20,7 +29,9 @@ export const initialState = {
   selected: "",
   FailedMsg:"",
   AuthFlag: false,
-  AuthLoading: false
+  AuthLoading: false,
+  ResetPassFlag: false,
+  Sentemail: null
 };
 
 const usersReducer = createReducer(initialState, {
@@ -46,6 +57,27 @@ const usersReducer = createReducer(initialState, {
     {
       state.FailedMsg = payload.data.message
     }
+  },
+  [USER_SIGN_OUT_SUCCESS]: (state) => {
+    state.isAuthorized = false;
+    state.loading = false;
+    state.token = null;
+    state.currentUser = {};
+  },
+  [USER_RESETPASS_SUCCESS]: (state, {payload}) => {
+    state.Sentemail = payload.Sentemail;
+    state.ResetPassFlag = true;
+  },
+  [USER_RESETPASS_FAILURE]: (state, {payload}) => {
+    state.FailedMsg = payload.data.message;
+    state.ResetPassFlag = false;
+  },
+  [USER_CONFIRMPASS_SUCCESS]: (state) => {
+    state.Sentemail = null;
+    state.ResetPassFlag = false;
+  },
+  [USER_CONFIRMPASS_FAILURE]: (state, {payload}) => {
+    state.FailedMsg = payload.data.message
   },
   [FETCH_ME_REQUEST]: state => {
     state.loading = true;

@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
       first_name: req.body.given_name,
       last_name: req.body.family_name,
       email: req.body.email,
-      user_type: 'aws_social',
+      user_type: 'aws_social'
     });
     return res.send(user)
   }
@@ -50,5 +50,35 @@ router.post('/confirm', async (req, res) => {
     res.send(result);
   });
 });
+
+router.post('/resetpass', async(req, res) => {
+  const user = await req.context.models.User.findByUsername(req.body.username);
+  if(user)
+  {
+      CognitoService.resetpass(req.body, function(err, result){
+        if (err) {
+          return res.status(404).send(err);
+        }
+        res.send(result);
+      })
+  }else{
+    const err = {"message":"User doesn't exist."}
+    return res.status(404).send(err);
+  }
+})
+
+router.post('/confirmpass', async(req, res) => {
+  CognitoService.confirmpass(req.body, function(err, result){
+    if (err) {
+      return res.status(404).send(err);
+    }
+    res.send(result);
+  })
+})
+
+router.post('/signout', async(req, res) => {
+  CognitoService.signout(req.body);
+  return res.send({"message": "success"})
+})
 
 export default router;

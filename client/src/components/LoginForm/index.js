@@ -1,18 +1,15 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Amplify, { Auth, Hub } from 'aws-amplify';
 import aws_config from '../../aws-exports.js'
 import { Form, Icon, Input, Checkbox, Divider } from "antd";
-import {
-  AppleFilled
-} from '@ant-design/icons';
 import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
 import FormItem from "../FormItem";
 import GoogleIcon from "../../assets/icons/google.js"
-import { userLoginFailureAction, fetchMeRequestAction, userSignupRequestAction } from "../../store/actions/users";
+import { userLoginFailureAction, fetchMeRequestAction, userSignupRequestAction, userResetpassFailureAction, userResetpassRequestAction } from "../../store/actions/users";
 
 import {
   Container,
@@ -32,8 +29,9 @@ import {
 
 Amplify.configure(aws_config);
 
-const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, location}) => {
-  const { getFieldDecorator, validateFields } = form;
+const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userResetpassFailure, userResetpass, ResetPassFlag, Sentemail}) => {
+  const { getFieldDecorator, validateFields, getFieldValue, isFieldValidating, getFieldError } = form;
+
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -43,6 +41,30 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, locatio
       }
     });
   };
+
+  const handleSubmitResetPass = () => {
+    if(!getFieldValue('email') || getFieldValue('email') == ""){
+      userResetpassFailure({
+        "data":{
+          "message":"please enter the email you would like to reset"
+        }
+      })
+    }else{
+      userResetpassFailure({
+        "data":{
+          "message":""
+        }
+      })
+      if(!getFieldError('email'))
+      {
+        userResetpass({
+          "email": getFieldValue('email'),
+          "username": getFieldValue('email').replace(/@/g,"-").replace(/\./g, "_")
+        })
+        // history.push(routes.CONFIRM)
+      }
+    }
+  }
 
   const handleClickRegister = () => {
     history.push(routes.SIGNUP);
@@ -63,6 +85,11 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, locatio
       SignupRequest(Request)
     })
     .catch(err => console.log("err",err))
+
+    if(ResetPassFlag)
+    {
+      history.push(routes.CONFIRM)
+    }
   })
 
   return (
@@ -85,11 +112,13 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, locatio
             <FormItem label="E-Mail">
               <ErrorDiv>{FailedMsg}</ErrorDiv>
               {getFieldDecorator("email", {
-                rules: [{ required: true, message: "Please input your email!" }]
+                rules: [{ required: true, message: "Please input your email!" },
+                        { type: 'email', message: "Invalid email type" }  
+                       ]
               })(
                 <Input
                   prefix={<Icon type="mail" style={{ color: "rgba(0,0,0,.25)" }} />}
-                  placeholder="Your E-Mail"
+                  placeholder="Your E-Mail" name = "email"
                 />
               )}
             </FormItem>
@@ -110,7 +139,7 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, locatio
                 initialValue: true
               })(<Checkbox style={{display:'block'}}>Remember me</Checkbox>)}
             </FormItem>
-            <ForgotButton>
+            <ForgotButton onClick={handleSubmitResetPass}>
               <span className="forgot-button">Forgot password?</span>
             </ForgotButton>
             </div>
@@ -160,15 +189,18 @@ LoginForm.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  fetchMe: PropTypes.func.isRequired,
   FailedMsg: state.users.FailedMsg,
-  loading: state.users.loading
+  loading: state.users.loading,
+  ResetPassFlag: state.users.ResetPassFlag,
+  Sentemail: state.users.Sentemail
 });
 
 const mapDispatchToProps = {
   userLoginFailure: userLoginFailureAction,
   fetchMe: fetchMeRequestAction,
-  SignupRequest: userSignupRequestAction
+  SignupRequest: userSignupRequestAction,
+  userResetpassFailure: userResetpassFailureAction,
+  userResetpass: userResetpassRequestAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: "normal_login" })(LoginForm));

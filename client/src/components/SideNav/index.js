@@ -1,5 +1,6 @@
 import React from "react";
-// import PropTypes from "prop-types";
+import PropTypes from "prop-types";
+import { connect, useSelector } from "react-redux";
 import { Container, AppLogo, MenuCont, MainMenu, ExtraMenu, MenuItem } from "./styled";
 import PoochoLogoIcon from "../../assets/icons/poocho-logo";
 import HomeIcon from "../../assets/icons/home";
@@ -8,8 +9,12 @@ import ChatIcon from "../../assets/icons/chat";
 import AddUserIcon from "../../assets/icons/add-user";
 import SettingIcon from "../../assets/icons/setting";
 import LogoutIcon from "../../assets/icons/logout";
-
-const SideNav = () => {
+function SideNav(props) {
+  const { logout } = props
+  const currentUser = useSelector(state=>state.users.currentUser)
+  const handleLogout = () => {
+    logout(currentUser)
+  }
   return (
     <Container>
       <AppLogo>
@@ -49,7 +54,7 @@ const SideNav = () => {
             </i>
             <span>Setting</span>
           </MenuItem>
-          <MenuItem key="3">
+          <MenuItem key="3" onClick={handleLogout}>
             <i className="anticon">
               <LogoutIcon />
             </i>
@@ -61,6 +66,8 @@ const SideNav = () => {
   );
 };
 
-SideNav.propTypes = {};
+SideNav.propTypes = {
+  logout: PropTypes.func.isRequired,
+};
 
-export default SideNav;
+export default SideNav

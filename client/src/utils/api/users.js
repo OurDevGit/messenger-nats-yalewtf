@@ -22,6 +22,33 @@ const register = data =>
     })
     .then(result => result.data);
 
+const signout = data =>
+  api
+    .callApi({
+      url: `${prefix}/signout`,
+      method: "post",
+      data
+    })
+    .then(result => result.data);
+
+const resetpass = data =>
+  api
+    .callApi({
+      url: `${prefix}/resetpass`,
+      method: "post",
+      data
+    })
+    .then(result => result.data);
+
+const confirmpass = data =>
+  api
+    .callApi({
+      url: `${prefix}/confirmpass`,
+      method: "post",
+      data
+    })
+    .then(result => result.data);
+
 const fetchMe = () =>
   api.callApi({
     url: `${usersPrefix}/me`
@@ -35,6 +62,9 @@ const fetchUsers = () =>
 export default {
   login,
   register,
+  resetpass,
+  confirmpass,
   fetchMe,
-  fetchUsers
+  fetchUsers,
+  signout
 };

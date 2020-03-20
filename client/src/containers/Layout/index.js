@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import AppLayout from "../../components/AppLayout";
+import { userSignoutRequestAction } from "../../store/actions/users";
 
 /**
  * will render component with header and side bar, if the user is autherized
@@ -22,7 +23,7 @@ const WithLayout = Component => {
   const mapStateToProps = () => ({});
 
   const mapDispatchToProps = {
-    logout: () => null
+    logout: userSignoutRequestAction
   };
 
   const enhance = connect(mapStateToProps, mapDispatchToProps);
