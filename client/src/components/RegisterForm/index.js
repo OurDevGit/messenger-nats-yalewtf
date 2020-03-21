@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
-import { Form, Icon, Input, notification } from "antd";
+import { Form, Icon, Input } from "antd";
 import AppLogo from "../AppLogo";
 import routes from "../../constants/routes";
 import { userSignupRequestAction } from "../../store/actions/users";
 import { connect } from "react-redux";
-import Amplify, { Auth, Hub } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import aws_config from '../../aws-exports.js'
 import GoogleIcon from "../../assets/icons/google.js"
 import {
@@ -16,7 +16,6 @@ import {
   FormTitle,
   FormDescription,
   SignupButton,
-  LoginButton,
   ActionCont,
   SocialButton,
   ErrorDiv,
@@ -27,22 +26,23 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
 
   const handleSubmit = e => {
     e.preventDefault();
-    var flag = true;
+    
     validateFields((err, values) => {
+      var flag= true;
       if(values.password && values.confirmPassword)
       {
-        if(values.password != values.confirmPassword)
+        if(values.password !== values.confirmPassword)
         {
-          var flag =  false;
+          flag =  false;
           setPassMathingErroFlag(false);
         }else{
-          var flag = validateStrongPassword(values.password);
+          flag = validateStrongPassword(values.password);
           setPassMathingErroFlag(true)
           setPassStrongErrorFlag(validateStrongPassword(values.password))
         }
         values.username=values.email.replace(/@/g,"-").replace(/\./g, "_");
       }
-      if (!err && flag == true) {
+      if (!err && flag ===true) {
         userSignup(values);
       }
     });
@@ -55,7 +55,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
   })
 
   const validateStrongPassword = (password) => {
-    var matchedCase = new Array();
+    var matchedCase = [];
     matchedCase.push("[$@$!%*#?&]"); // Special Charector
     matchedCase.push("[A-Z]");      // Uppercase Alpabates
     matchedCase.push("[0-9]");      // Numbers
@@ -70,7 +70,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
     {
       ctr++;
     }
-    if(ctr == 5)
+    if(ctr === 5)
     {
       return true
     }else{
@@ -79,10 +79,6 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
   }
   const [PassStrongErroFlag, setPassStrongErrorFlag] =  useState(true);
   const [PassMathingErroFlag, setPassMathingErroFlag] =  useState(true);
-
-  const handleClickLogin = () => {
-    history.push(routes.LOGIN);
-  };
 
   return (
     <Container>

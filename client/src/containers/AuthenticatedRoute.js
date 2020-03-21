@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Route, Redirect } from "react-router-dom";
 import WithLayout from "./Layout";
 import routes from "../constants/routes";
-import { storeToken, getToken } from "../utils/tokenStore";
+import { storeToken } from "../utils/tokenStore";
 
 import { changeThemeAction } from "../store/actions/global";
 /**
@@ -19,7 +19,7 @@ import { changeThemeAction } from "../store/actions/global";
 
 const AuthenticatedRoute = ({ path, isAuthorized, token, component,location, ...rest }) => {
 
-  if(location.hash != "" && location.pathname == "/")
+  if(location.hash !== "" && location.pathname === "/")
   {
     var paramtoken ={ 
       "accesstoken": location.hash.split("&")[0].split('=')[1],

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Amplify, { Auth, Hub } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import aws_config from '../../aws-exports.js'
 import { Form, Icon, Input, Checkbox, Divider } from "antd";
 import AppLogo from "../AppLogo";
@@ -30,7 +30,7 @@ import {
 Amplify.configure(aws_config);
 
 const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userResetpassFailure, userResetpass, ResetPassFlag, Sentemail}) => {
-  const { getFieldDecorator, validateFields, getFieldValue, isFieldValidating, getFieldError } = form;
+  const { getFieldDecorator, validateFields, getFieldValue, getFieldError } = form;
 
 
   const handleSubmit = e => {
@@ -43,7 +43,7 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
   };
 
   const handleSubmitResetPass = () => {
-    if(!getFieldValue('email') || getFieldValue('email') == ""){
+    if(!getFieldValue('email') || getFieldValue('email') === ""){
       userResetpassFailure({
         "data":{
           "message":"please enter the email you would like to reset"

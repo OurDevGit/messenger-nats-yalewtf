@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Amplify, { Auth, Hub } from 'aws-amplify';
-import aws_config from '../../aws-exports.js'
-import { Form, Icon, Input, Checkbox, Divider, InputNumber } from "antd";
+import { Form, Icon, Input } from "antd";
 import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
@@ -23,8 +21,6 @@ import {
   ErrorDiv
 } from "./styled";
 
-Amplify.configure(aws_config);
-
 const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, Sentemail, ResetPassFlag}) => {
   const { getFieldDecorator, validateFields } = form;
 
@@ -36,10 +32,6 @@ const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, Sentemail, Res
         userconfirmpass(values);
       }
     });
-  };
-
-  const handleClickRegister = () => {
-    history.push(routes.SIGNUP);
   };
 
   useEffect(()=>{

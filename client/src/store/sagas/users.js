@@ -48,7 +48,7 @@ function* loginUserSaga(action) {
 function* signupSaga(action) {
   try {
     const response = yield call(userApi.register, action.payload);
-    if(response.user_type == "aws_social"){
+    if(response.user_type === "aws_social"){
       yield put({ type: FETCH_ME_REQUEST });
     }else{
       yield put(userSignupSuccessAction(response));

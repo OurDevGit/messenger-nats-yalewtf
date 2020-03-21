@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Container, AppLogo, MenuCont, MainMenu, ExtraMenu, MenuItem } from "./styled";
 import PoochoLogoIcon from "../../assets/icons/poocho-logo";
 import HomeIcon from "../../assets/icons/home";
