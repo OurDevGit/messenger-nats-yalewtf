@@ -1,3 +1,5 @@
+import e from 'express';
+
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const poolData = {
   UserPoolId: process.env.AWS_POOL_ID,
@@ -48,7 +50,14 @@ const login = (body, callback) => {
       Password: password,
     },
   );
-
+  
+  const codeDeliveryDetails = new AmazonCognitoIdentity.CodeDeliveryDetails(
+    {
+      AttributeName: "email",
+      DeliveryMedium: "EMAIL",
+      Destination: email,
+    }
+  )
   const userData = {
     Username: email,
     Pool: userPool,
@@ -59,8 +68,49 @@ const login = (body, callback) => {
     onSuccess: function(result) {
       const accesstoken = result.getAccessToken().getJwtToken();
       const refreshtoken = result.getRefreshToken().getToken();
+      // var verificationCode = prompt('Please input verification code' ,'');
+      // cognitoUser.sendMFACode(verificationCode, this, 'SOFTWARE_TOKEN_MFA');
+      // callback(null, { accesstoken, refreshtoken });
+      // cognitoUser.setDeviceStatusRemembered({
+      //   onSuccess: function(result) {
+      //     callback(null, { accesstoken, refreshtoken });
+      //   },
+      //   onFailure: function(err){
+      //     callback(err)
+      //   }
+      // })
+      // cognitoUser.listDevices(10, null, {
+      //   onSuccess: function(result){
+      //     callback(null, result)
+      //   }
+      // })
 
-      callback(null, { accesstoken, refreshtoken });
+      cognitoUser.getDevice({
+        onSuccess: function(result){
+          callback(null, { accesstoken, refreshtoken });
+        },
+        onFailure: function(error){
+          cognitoUser.listDevices(10, null, {
+            onSuccess: function(result){
+              callback(null, result.Devices)
+              if(result.Devices.length >0)
+              {
+                callback(error)
+              }else{
+                cognitoUser.setDeviceStatusRemembered({
+                  onSuccess: function(result) {
+                    callback(null, { accesstoken, refreshtoken });
+                  },
+                  onFailure: function(err){
+                    callback(err)
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
+      
     },
     onFailure: function(err) {
       callback(err);
