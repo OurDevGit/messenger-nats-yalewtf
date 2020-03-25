@@ -15,9 +15,10 @@ const Chats = ({ users, selected, onSelect }) => {
         <UserCard
           key={user.id}
           onClick={clickHandler(user.username)}
+          userAvatarLetter = {user.last_name ? `${user.first_name[0]}${user.last_name[0]}` : user.first_name[0]}
           userName={`${user.first_name} ${user.last_name}`}
           className={selected === user.username ? "active" : ""}
-          message="You: I’m not sure, but let me find best solution for our problem"
+          message={user.username === 'rea' ? "Hi, I'm Rea. Let me know how I can help." :"You: I’m not sure, but let me find best solution for our problem"}
           time="12:50 AM"
           // badgeText={0}
           // isOnline

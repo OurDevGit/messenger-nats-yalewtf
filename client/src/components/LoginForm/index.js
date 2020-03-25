@@ -3,14 +3,14 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Amplify, { Auth } from 'aws-amplify';
 import aws_config from '../../aws-exports.js'
-import { Form, Icon, Input, Checkbox, Divider } from "antd";
+import { Form, Icon, Input, Checkbox, Divider, notification } from "antd";
 import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
 import FormItem from "../FormItem";
 import GoogleIcon from "../../assets/icons/google.js"
 import { userLoginFailureAction, fetchMeRequestAction, userSignupRequestAction, userResetpassFailureAction, userResetpassRequestAction } from "../../store/actions/users";
-
+import { Error_ResetPass_Request, Error_Email_Required, Error_Password_Required, Error_Email_Invalid } from '../../constants/text'
 import {
   Container,
   FormWrapper,
@@ -29,13 +29,20 @@ import {
 
 Amplify.configure(aws_config);
 
-const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userResetpassFailure, userResetpass, ResetPassFlag, Sentemail}) => {
+const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userResetpassFailure, userResetpass, ResetPassFlag, AuthLoading}) => {
   const { getFieldDecorator, validateFields, getFieldValue, getFieldError } = form;
 
 
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
+      if(err)
+      {
+        notification.error({
+          message: 'Error',
+          description: Object.values(err)[0].errors[0].message,          
+        });
+      }
       if (!err) {
         userLogin(values);
       }
@@ -46,9 +53,13 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
     if(!getFieldValue('email') || getFieldValue('email') === ""){
       userResetpassFailure({
         "data":{
-          "message":"please enter the email you would like to reset"
+          "message": Error_ResetPass_Request
         }
-      })
+      });
+      notification.error({
+        message: 'Error',
+        description: Error_ResetPass_Request,          
+      });
     }else{
       userResetpassFailure({
         "data":{
@@ -71,6 +82,7 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
   };
 
   useEffect(()=>{
+   
     Auth.currentAuthenticatedUser({
       bypassCache: false
     })
@@ -112,8 +124,8 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
             <FormItem label="E-Mail">
               <ErrorDiv>{FailedMsg}</ErrorDiv>
               {getFieldDecorator("email", {
-                rules: [{ required: true, message: "Please input your email!" },
-                        { type: 'email', message: "Invalid email type" }  
+                rules: [{ required: true, message: Error_Email_Required },
+                        { type: 'email', message: Error_Email_Invalid }  
                        ]
               })(
                 <Input
@@ -124,7 +136,7 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
             </FormItem>
             <FormItem label="Password">
               {getFieldDecorator("password", {
-                rules: [{ required: true, message: "Please input your Password!" }]
+                rules: [{ required: true, message: Error_Password_Required}]
               })(
                 <Input.Password
                   prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />}
@@ -147,8 +159,8 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
               <SignupButton type="primary" onClick={handleClickRegister}>
                 Register
               </SignupButton>
-              <LoginButton type="primary" htmlType="submit">
-                Log in
+              <LoginButton type="primary" htmlType="submit" loading={AuthLoading}>
+                Log in with Email
               </LoginButton>
             </ActionCont>
 
@@ -191,6 +203,7 @@ LoginForm.propTypes = {
 const mapStateToProps = state => ({
   FailedMsg: state.users.FailedMsg,
   loading: state.users.loading,
+  AuthLoading: state.users.AuthLoading,
   ResetPassFlag: state.users.ResetPassFlag,
   Sentemail: state.users.Sentemail
 });

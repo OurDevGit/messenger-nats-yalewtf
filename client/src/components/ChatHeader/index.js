@@ -42,6 +42,7 @@ const HeaderComponent = ({ theme, user, openSidebar, toggleSidebar }) => {
         </div>
         <UserCard
           color={theme.header.avatarColor}
+          userAvatarLetter = {user.last_name ? `${user.first_name[0]}${user.last_name[0]}` : user.first_name[0]}
           userName={`${user.first_name} ${user.last_name}`}
         />
       </div>

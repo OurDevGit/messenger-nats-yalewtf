@@ -5,7 +5,7 @@ import { Avatar, Icon } from "antd";
 import NightIcon from "../../assets/icons/night";
 import LockIcon from "../../assets/icons/lock";
 
-import { Container, UserName, Infos, UserPicture, UnreadCount, StatusUser } from "./styled";
+import { Container, UserName, Infos, UserPicture, UnreadCount, StatusUser, AvatarLetter } from "./styled";
 
 /**
  * @param {userName}userName  name of user
@@ -21,6 +21,7 @@ const UserCard = ({
   color,
   favorite,
   userName,
+  userAvatarLetter,
   message,
   time,
   badgeText,
@@ -32,7 +33,10 @@ const UserCard = ({
     <Container {...rest}>
       <UserPicture>
         <UnreadCount count={badgeText}>
-          <Avatar icon="user" />
+          {/* <Avatar icon="user" /> */}
+          <AvatarLetter>
+            {userAvatarLetter}
+          </AvatarLetter>
         </UnreadCount>
         {isOnline && <StatusUser />}
       </UserPicture>
@@ -60,6 +64,7 @@ const UserCard = ({
 
 UserCard.propTypes = {
   userName: PropTypes.string,
+  userAvatarLetter: PropTypes.string,
   badgeText: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   color: PropTypes.string,
   time: PropTypes.string,
@@ -78,7 +83,8 @@ UserCard.defaultProps = {
   time: "",
   badgeText: null,
   color: null,
-  fromHeader: false
+  fromHeader: false,
+  userAvatarLetter: ""
 };
 
 export default UserCard;

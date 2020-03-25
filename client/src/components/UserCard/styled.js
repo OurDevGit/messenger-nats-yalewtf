@@ -96,3 +96,14 @@ export const Infos = styled.div`
     }
   }
 `;
+
+export const AvatarLetter = styled.div`
+  font-size:30px;
+  width: 45px;
+  text-transform: uppercase;
+  color: white;
+  background: green;
+  padding: 7px 0px;
+  border-radius: 50%;
+  text-align: center;
+`;

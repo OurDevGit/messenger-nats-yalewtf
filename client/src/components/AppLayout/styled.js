@@ -51,3 +51,12 @@ export const PageHeader = styled(AntPageHeader)`
     }
   }
 `;
+export const EmailSpan = styled.span`
+  font-size: 14px;
+  color: ${({ theme }) => theme.login.description};
+  position: absolute;
+  right: 24px;
+  @media (max-width: ${({ theme }) => theme.brackPoints.md}) {
+    text-align: center;
+  }
+`;

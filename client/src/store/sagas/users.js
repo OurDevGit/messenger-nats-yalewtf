@@ -1,7 +1,8 @@
 import { takeLatest, takeEvery, put, call, select } from "redux-saga/effects";
 import { userApi, messageApi } from "../../utils/api";
 import { storeToken, getToken } from "../../utils/tokenStore";
-import {notification} from 'antd'
+import { notification } from 'antd'
+import { Success_Login_message, Success_Signup_message, Success_Logout_message, Success_ResetPass_message, Error_UsernameExistsException} from '../../constants/text'
 import {
   USER_LOGIN_REQUEST,
   userLoginFailureAction,
@@ -34,12 +35,12 @@ function* loginUserSaga(action) {
     yield put({ type: FETCH_ME_REQUEST });
     notification.success({
       message: 'Poocho_Messenger',
-      description: "Successfully logined to poocho messenger",          
+      description: Success_Login_message,          
     });
   } catch (e) {
     yield put(userLoginFailureAction(e));
     notification.error({
-      message: 'Poocho_Messenger',
+      message: 'Error',
       description: e.data.message,          
     });
   }
@@ -54,16 +55,19 @@ function* signupSaga(action) {
       yield put(userSignupSuccessAction(response));
       notification.success({
         message: 'Poocho_Messenger',
-        description: "Your account has been created! Please check your email",          
+        description: Success_Signup_message,          
       });
     }
     
   } catch (e) {
+    if(e.data.name === "UsernameExistsException"){
+      notification.error({
+        message: 'Error',
+        description: Error_UsernameExistsException,
+      });
+      e.data.message = Error_UsernameExistsException;
+    }
     yield put(userSignupFailureAction(e));
-    notification.error({
-      message: 'Poocho_Messenger',
-      description: e.data.message,          
-    });
   }
 }
 
@@ -73,13 +77,13 @@ function* signoutSaga(action) {
     yield put(userSignoutSuccessAction(response));
     storeToken(null);
     notification.success({
-      message: 'Poocho_Messenger',
-      description: "You are logout",          
+      message: 'poocho messenger:logged out',
+      description: Success_Logout_message,          
     });
   } catch (e) {
     yield put(userSignoutFailureAction(e));
     notification.error({
-      message: 'Poocho_Messenger',
+      message: 'Error',
       description: e.data.message,
     });
   }
@@ -100,12 +104,12 @@ function* confirmpassSaga(action) {
     yield put( userConfirmpassSuccessAction(response));
     notification.success({
       message: 'Poocho_Messenger',
-      description: "Your password changed succcessfully. Please Login with your new password",          
+      description: Success_ResetPass_message,          
     });
   } catch(e) {
     yield put( userConfirmpassFailureAction(e) );
     notification.error({
-      message: 'Poocho_Messenger',
+      message: 'Error',
       description: e.data.message,          
     });
   }

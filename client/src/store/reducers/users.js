@@ -4,6 +4,8 @@ import {
   USER_SIGN_UP_FAILURE,
   USER_SIGN_UP_SUCCESS,
   USER_SIGN_OUT_SUCCESS,
+  USER_LOGIN_REQUEST,
+  USER_LOGIN_SUCCESS,
   USER_LOGIN_FAILURE,
   USER_RESETPASS_SUCCESS,
   USER_RESETPASS_FAILURE,
@@ -47,8 +49,16 @@ const usersReducer = createReducer(initialState, {
       state.FailedMsg = payload.data.message
     }
   },
+  [USER_LOGIN_REQUEST]: (state) => {
+    state.AuthLoading = true;
+  },
+  [USER_LOGIN_SUCCESS]: (state) => {
+    state.AuthLoading = false;
+  },
   [USER_LOGIN_FAILURE]: (state , {payload}) => {
     state.loading = false;
+    state.AuthLoading = false;
+    state.AuthFlag =  false;
     if(payload.status === 404)
     {
       state.FailedMsg = payload.data.message

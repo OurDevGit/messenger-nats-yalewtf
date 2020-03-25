@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import PropTypes from "prop-types";
-import { Form, Icon, Input } from "antd";
+import { Form, Icon, Input, notification } from "antd";
 import AppLogo from "../AppLogo";
 import routes from "../../constants/routes";
 import { userSignupRequestAction } from "../../store/actions/users";
@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import Amplify, { Auth } from 'aws-amplify';
 import aws_config from '../../aws-exports.js'
 import GoogleIcon from "../../assets/icons/google.js"
+import { Error_Email_Required, Error_Password_Required, Error_FirstName_Required, Error_LastName_Required, Error_ConfirmPass_Required, Error_Email_Invalid, Error_Password_Invalid, Error_ConfirmPass_Invalid } from '../../constants/text'
 import {
   Container,
   FormWrapper,
@@ -26,8 +27,14 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
 
   const handleSubmit = e => {
     e.preventDefault();
-    
     validateFields((err, values) => {
+      if(err)
+      {
+        notification.error({
+          message: 'Error',
+          description: Object.values(err)[0].errors[0].message,          
+        });
+      }
       var flag= true;
       if(values.password && values.confirmPassword)
       {
@@ -35,10 +42,21 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
         {
           flag =  false;
           setPassMathingErroFlag(false);
+          notification.error({
+            message: 'Error',
+            description: Error_ConfirmPass_Invalid,          
+          });
         }else{
           flag = validateStrongPassword(values.password);
           setPassMathingErroFlag(true)
           setPassStrongErrorFlag(validateStrongPassword(values.password))
+          if(flag === false)
+          {
+            notification.error({
+              message: 'Error',
+              description: Error_Password_Invalid,          
+            });
+          }
         }
         values.username=values.email.replace(/@/g,"-").replace(/\./g, "_");
       }
@@ -66,7 +84,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
             ctr++;
         }
     }
-    if(password.length >7)
+    if(password.length >13)
     {
       ctr++;
     }
@@ -91,37 +109,37 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
           <FormDescription>START YOUR PERSONAL EXPIERENCE</FormDescription>
           <FormTitle>Create your account</FormTitle>
 
-          <Form.Item label="Username(your email)">
+          <Form.Item label="Username(email)">
             {getFieldDecorator("email", {
-              rules: [{ required: true, message: "Please input your email!" },
-                      { type: 'email', message: "Invalid email type" }  
+              rules: [{ required: true, message: Error_Email_Required },
+                      { type: 'email', message: Error_Email_Invalid }  
                     ]
-            })(<Input placeholder="Your username or Email" />)}
+            })(<Input placeholder="Username(Email)" />)}
             <ErrorDiv>{FailedMsg}</ErrorDiv>
           </Form.Item>
 
           <Form.Item label="First Name">
             {getFieldDecorator("given_name", {
-              rules: [{ required: true, message: "Please input your First Name!" }]
+              rules: [{ required: true, message: Error_FirstName_Required }]
             })(<Input placeholder="Your First name" />)}
           </Form.Item>
 
           <Form.Item label="Last Name">
             {getFieldDecorator("family_name", {
-              rules: [{ required: true, message: "Please input your Last name!" }]
+              rules: [{ required: true, message: Error_LastName_Required }]
             })(<Input placeholder="Your Last name" />)}
           </Form.Item>
 
           <Form.Item label="Password">
             {getFieldDecorator("password", {
-              rules: [{ required: true, message: "Please input your Password!" }]
+              rules: [{ required: true, message: Error_Password_Required }]
             })(
               <Input.Password
                 prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />}
                 placeholder="Password"
               />
             )}
-            <ErrorDiv hidden={PassStrongErroFlag}>Include Special Charector, Uppercase and Lowercase Alpabates, Numbers, minLength is 8</ErrorDiv>
+            <ErrorDiv hidden={PassStrongErroFlag}>{Error_Password_Invalid}</ErrorDiv>
           </Form.Item>
 
           <Form.Item label="Confirm Password">
@@ -129,7 +147,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
               rules: [
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: Error_ConfirmPass_Required,
                 },
               ]
             })(
@@ -138,11 +156,11 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
                 placeholder="Confirm Password"
               />
             )}
-            <ErrorDiv hidden={PassMathingErroFlag}>The two passwords that you entered do not match!</ErrorDiv>
+            <ErrorDiv hidden={PassMathingErroFlag}>{Error_ConfirmPass_Invalid}</ErrorDiv>
           </Form.Item>
           <ActionCont>
-            <SignupButton type="primary" htmlType="submit" >
-              SigntUp
+            <SignupButton type="primary" htmlType="submit" loading={AuthLoading}>
+              Signt up with Email
             </SignupButton>
           </ActionCont>
           <ActionCont>
@@ -152,7 +170,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
               }}>
             {/* <Icon type="google" style={{ color: "rgba(0,0,0,.25)" }} /> */}
             <GoogleIcon />
-              Sign in with Google
+              Sign up with Google
             </SocialButton>
             {/* </a> */}
           </ActionCont>
@@ -162,7 +180,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
                 Auth.federatedSignIn({provider: "SignInWithApple"})
               }}>
               <Icon type="apple" theme='filled' />
-              Sign in with Apple
+              Sign up with Apple
             </SocialButton>
               {/* </a> */}
           </ActionCont>         

@@ -4,6 +4,16 @@ import CognitoService from '../services/AuthService';
 const router = Router();
 
 router.post('/login', async (req, res) => {
+  const bot = await req.context.models.User.findByUsername('rea');
+  if(!bot){
+    const bot = await req.context.models.User.create({
+      username: 'rea',
+      first_name: 'Rea',
+      last_name: '',
+      email: 'rea.bot.com',
+      user_type: 'bot',
+    });
+  }
   CognitoService.login(req.body, function(err, result) {
     if (err) {
       return res.status(404).send(err);
@@ -14,6 +24,16 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
+  const bot = await req.context.models.User.findByUsername('rea');
+  if(!bot){
+    const bot = await req.context.models.User.create({
+      username: 'rea',
+      first_name: 'Rea',
+      last_name: '',
+      email: 'rea.bot.com',
+      user_type: 'bot',
+    });
+  }
   if(!req.body.social)
   {
     CognitoService.register(req.body, async function(err, result) {
