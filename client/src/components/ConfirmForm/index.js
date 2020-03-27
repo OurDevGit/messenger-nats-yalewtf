@@ -6,7 +6,7 @@ import AppLogo from "../AppLogo";
 import PoochoLogo from "./poochoLogo";
 import routes from "../../constants/routes";
 import FormItem from "../FormItem";
-import { fetchMeRequestAction, userConfirmpassRequestAction } from "../../store/actions/users";
+import { fetchMeRequestAction, userConfirmpassRequestAction, userResendcodeRequestAction, userResetpassRequestAction } from "../../store/actions/users";
 
 import {
   Container,
@@ -21,21 +21,48 @@ import {
   ErrorDiv
 } from "./styled";
 
-const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, Sentemail, ResetPassFlag}) => {
+const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, userresendcode, userResetpass, Sentuser, ResetPassFlag, confirmType}) => {
   const { getFieldDecorator, validateFields } = form;
 
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
       if (!err) {
-        values.email =  Sentemail;
+        values.email =  Sentuser.email;
+        values.confirmType = confirmType;
+        if(Sentuser.password){
+          values.newPassword =  Sentuser.password
+        }
+        if(Sentuser.username)
+        {
+          values.username =  Sentuser.username;
+        }
+        console.log(values)
         userconfirmpass(values);
       }
     });
   };
 
+  const handleResedVerificationCode = () =>{
+    if(confirmType === "register")
+    {
+      var Request = {
+        email: Sentuser.email,
+        username: Sentuser.username
+      }
+      userresendcode(Request);
+    }else if(confirmType === "resetpass"){
+      userResetpass({
+        "email": Sentuser.email,
+        "username": Sentuser.email.replace(/@/g,"-").replace(/\./g, "_")
+      })
+    }
+    
+  }
+
   useEffect(()=>{
-    if(!Sentemail && !ResetPassFlag){
+    console.log(confirmType)
+    if(!Sentuser && !ResetPassFlag){
       history.push(routes.LOGIN)
     }
   })
@@ -69,22 +96,28 @@ const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, Sentemail, Res
                 />
               )}
             </FormItem>
-            <FormItem label="Password">
-              {getFieldDecorator("newPassword", {
-                rules: [{ required: true, message: "Please input your Password!" }]
-              })(
-                <Input.Password
-                  style={{"textAlign": "center"}}
-                  prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />}
-                  placeholder="New Password"
-                />
-              )}
-            </FormItem>
+            {
+              confirmType === "resetpass" ? 
+                <FormItem label="Password">
+                  {getFieldDecorator("newPassword", {
+                    rules: [{ required: true, message: "Please input your Password!" }]
+                  })(
+                    <Input.Password
+                      style={{"textAlign": "center"}}
+                      prefix={<Icon type="key" style={{ color: "rgba(0,0,0,.25)" }} />}
+                      placeholder="New Password"
+                    />
+                  )}
+                </FormItem>
+              : null
+            }
+            
             <ActionCont>
               <ConfirmButton type="primary" htmlType="submit">
                 Verify
               </ConfirmButton>
             </ActionCont>
+            <p>Didn't received verification code?<a onClick={handleResedVerificationCode}>Resend verification code to your email</a></p>
           </Form>
         </div>
       </FormWrapper>
@@ -103,13 +136,16 @@ const mapStateToProps = state => ({
   fetchMe: PropTypes.func.isRequired,
   FailedMsg: state.users.FailedMsg,
   loading: state.users.loading,
-  Sentemail: state.users.Sentemail,
-  ResetPassFlag: state.users.ResetPassFlag
+  Sentuser: state.users.Sentuser,
+  ResetPassFlag: state.users.ResetPassFlag,
+  confirmType: state.users.confirmType
 });
 
 const mapDispatchToProps = {
   fetchMe: fetchMeRequestAction,
-  userconfirmpass: userConfirmpassRequestAction
+  userconfirmpass: userConfirmpassRequestAction,
+  userresendcode: userResendcodeRequestAction,
+  userResetpass: userResetpassRequestAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: "normal_login" })(ConfirmForm));

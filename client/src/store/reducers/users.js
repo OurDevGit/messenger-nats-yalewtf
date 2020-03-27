@@ -29,21 +29,25 @@ export const initialState = {
   AuthFlag: false,
   AuthLoading: false,
   ResetPassFlag: false,
-  Sentemail: null
+  Sentuser: null,
+  confirmType: null
 };
 
 const usersReducer = createReducer(initialState, {
-  [USER_SIGN_UP_REQUEST]: (state) => {
+  [USER_SIGN_UP_REQUEST]: (state, payload) => {
     state.AuthLoading = true;
+    state.Sentuser = payload.payload;
   },
-  [USER_SIGN_UP_SUCCESS]: (state) => {
+  [USER_SIGN_UP_SUCCESS]: (state, payload) => {
     state.AuthLoading = false;
     state.AuthFlag =  true;
     state.FailedMsg = "";
+    state.confirmType = "register";
   },
   [USER_SIGN_UP_FAILURE]: (state , {payload}) => {
     state.AuthLoading = false;
     state.AuthFlag =  false;
+    state.Sentuser = null;
     if(payload.status === 400)
     {
       state.FailedMsg = payload.data.message
@@ -71,7 +75,8 @@ const usersReducer = createReducer(initialState, {
     state.currentUser = {};
   },
   [USER_RESETPASS_SUCCESS]: (state, {payload}) => {
-    state.Sentemail = payload.Sentemail;
+    state.confirmType = "resetpass";
+    state.Sentuser = payload;
     state.ResetPassFlag = true;
   },
   [USER_RESETPASS_FAILURE]: (state, {payload}) => {
@@ -79,8 +84,9 @@ const usersReducer = createReducer(initialState, {
     state.ResetPassFlag = false;
   },
   [USER_CONFIRMPASS_SUCCESS]: (state) => {
-    state.Sentemail = null;
+    state.Sentuser = null;
     state.ResetPassFlag = false;
+    state.confirmType = null;
   },
   [USER_CONFIRMPASS_FAILURE]: (state, {payload}) => {
     state.FailedMsg = payload.data.message
@@ -93,6 +99,9 @@ const usersReducer = createReducer(initialState, {
     state.loading = false;
     state.token = payload.token;
     state.currentUser = payload.me;
+    state.Sentuser = null;
+    state.confirmType = null;
+    state.ResetPassFlag = false;
   },
   [FETCH_ME_FAILURE]: state => {
     state.isAuthorized = false;

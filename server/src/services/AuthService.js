@@ -112,14 +112,14 @@ const login = (body, callback) => {
 };
 
 const confirmCode = (body, callback) => {
-  const { code, email } = body;
+  const { verificationCode, email } = body;
   const userData = {
     Username: email,
     Pool: userPool,
   };
 
   var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-  cognitoUser.confirmRegistration(code, true, function(err, result) {
+  cognitoUser.confirmRegistration(verificationCode, true, function(err, result) {
     if (err) {
       callback(err);
       return;
@@ -153,8 +153,8 @@ const resetpass = (body, callback) =>{
   var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
   cognitoUser.forgotPassword({
     onSuccess: function(result){
-      const Sentemail = email
-      callback(null, {Sentemail})
+      // const email = email
+      callback(null, {"email":email})
     },
     onFailure: function(err){
       callback(err)
@@ -163,19 +163,69 @@ const resetpass = (body, callback) =>{
 }
 
 const confirmpass = (body, callback) =>{
-  const {email, verificationCode, newPassword} =  body;
+  const {email, verificationCode, newPassword, confirmType} =  body;
+  
+  if(confirmType === "resetpass"){
+    const userData = {
+      Username: email,
+      Pool: userPool,
+    };
+    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    cognitoUser.confirmPassword(verificationCode, newPassword, {
+      onSuccess: function(result){
+        callback(null, result)
+      },
+      onFailure: function(err){
+        callback(err)
+      }
+    })
+  }else if(confirmType === "register"){
+    const { username } =  body;
+    const userData = {
+      Username: username,
+      Pool: userPool,
+    };
+    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+    cognitoUser.confirmRegistration(verificationCode, false, function(err, result)
+      {
+        if(err){
+          callback(err);
+          return
+        }else{
+          const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+            {
+              Username: email,
+              Password: newPassword,
+            },
+          );
+          cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: function(result) {
+              const accesstoken = result.getAccessToken().getJwtToken();
+              const refreshtoken = result.getRefreshToken().getToken();
+              callback(null, { accesstoken, refreshtoken });
+            },
+            onFailure: function(err) {
+              callback(err);
+            },
+          });
+        }
+    })
+  } 
+}
+
+const resendcode = (body, callback) =>{
+  const {email, username} =  body;
   const userData = {
-    Username: email,
+    Username: username,
     Pool: userPool,
   };
   var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-  cognitoUser.confirmPassword(verificationCode, newPassword, {
-    onSuccess: function(result){
-      callback(null, result)
-    },
-    onFailure: function(err){
-      callback(err)
+  cognitoUser.resendConfirmationCode(function(err, result){
+    if(err){
+      callback(err);
+      return
     }
+    callback(null, result)
   })
 }
 
@@ -195,6 +245,7 @@ export default {
   confirmCode,
   resetpass,
   confirmpass,
+  resendcode,
   emailAvailable,
   signout
 };

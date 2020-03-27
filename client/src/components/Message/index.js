@@ -76,7 +76,7 @@ const MessageComponent = ({ selectedUser, currentUser, messages, createMessage, 
 
   return (
     <MessageBoard>
-      <MessageList messages={messages} currentUser={username} />
+      <MessageList messages={messages} currentUser={username} user={currentUser} />
       <MessageCreate onSubmit={handleSubmit} onTyping={userTyping} disable={!selectedUser} />
       <TypingIndicator>{renderTypers()}</TypingIndicator>
     </MessageBoard>

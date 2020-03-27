@@ -68,7 +68,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
 
   useEffect(()=>{
     if(AuthFlag){
-      history.push(routes.LOGIN);
+      history.push(routes.CONFIRM);
     }
   })
 

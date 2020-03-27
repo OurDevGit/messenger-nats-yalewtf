@@ -9,8 +9,7 @@ const user = (sequelize, DataTypes) => {
     first_name: { type: DataTypes.STRING },
     last_name: { type: DataTypes.STRING },
     email: {
-      type: DataTypes.STRING,
-      unique: true,
+      type: DataTypes.STRING
     },
     user_type: { type: DataTypes.STRING },
   });
@@ -36,6 +35,14 @@ const user = (sequelize, DataTypes) => {
   User.findByUsername = async (username = '') => {
     const user = await User.findOne({
       where: { username: username.toLowerCase() },
+    });
+
+    return user;
+  };
+
+  User.findByEmail = async (email = '') => {
+    const user = await User.findOne({
+      where: { email: email },
     });
 
     return user;

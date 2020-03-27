@@ -49,6 +49,15 @@ const confirmpass = data =>
     })
     .then(result => result.data);
 
+const resendcode = data =>
+  api
+    .callApi({
+      url: `${prefix}/resendcode`,
+      method: "post",
+      data
+    })
+    .then(result => result.data);
+
 const fetchMe = () =>
   api.callApi({
     url: `${usersPrefix}/me`
@@ -64,6 +73,7 @@ export default {
   register,
   resetpass,
   confirmpass,
+  resendcode,
   fetchMe,
   fetchUsers,
   signout

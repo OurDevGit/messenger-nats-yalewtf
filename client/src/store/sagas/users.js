@@ -25,6 +25,9 @@ import {
   fetchUsersSuccessAction,
   fetchUsersFailureAction,
   SELECT_USER,
+  USER_RESENDCODE_REQUEST,
+  userResendcodeFailureAction,
+  userResendcodeSuccessAction,
 } from "../actions/users";
 import { receivedPrevMessages } from "../actions/messages";
 
@@ -101,13 +104,41 @@ function* resetpassSaga(action) {
 function* confirmpassSaga(action) {
   try{
     const response = yield call(userApi.confirmpass, action.payload);
-    yield put( userConfirmpassSuccessAction(response));
-    notification.success({
-      message: 'Poocho_Messenger',
-      description: Success_ResetPass_message,          
-    });
+    if(response.accesstoken)
+    {
+      storeToken(response);
+      yield put({ type: FETCH_ME_REQUEST });
+      notification.success({
+        message: 'Poocho_Messenger',
+        description: Success_Login_message,          
+      });
+    }else{
+      yield put( userConfirmpassSuccessAction(response));
+      notification.success({
+        message: 'Poocho_Messenger',
+        description: Success_ResetPass_message,          
+      });
+    }
+    
   } catch(e) {
     yield put( userConfirmpassFailureAction(e) );
+    notification.error({
+      message: 'Error',
+      description: e.data.message,          
+    });
+  }
+}
+
+function* resendcodeSaga(action) {
+  try{
+    const response = yield call(userApi.resendcode, action.payload);
+    yield put( userResendcodeSuccessAction(response));
+    notification.success({
+      message: 'Poocho_Messenger',
+      description: "Successfully resend",          
+    });
+  } catch(e) {
+    yield put( userResendcodeFailureAction(e) );
     notification.error({
       message: 'Error',
       description: e.data.message,          
@@ -157,6 +188,7 @@ export default function*() {
   yield takeLatest(USER_SIGN_OUT_REQUEST, signoutSaga);
   yield takeLatest(USER_RESETPASS_REQUEST, resetpassSaga);
   yield takeLatest(USER_CONFIRMPASS_REQUEST, confirmpassSaga);
+  yield takeLatest(USER_RESENDCODE_REQUEST, resendcodeSaga);
   yield takeLatest(FETCH_ME_REQUEST, fetchMe);
   yield takeEvery(FETCH_USERS_REQUEST, fetchUsers);
   yield takeEvery(SELECT_USER, fetchPreMessage);

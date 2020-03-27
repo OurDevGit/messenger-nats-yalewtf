@@ -5,7 +5,7 @@ import UserCard from "../../UserCard";
 import { Container, BubbleContent } from "./styled";
 import ReplyIcon from "../../../assets/icons/reply";
 
-const Message = ({ message, isMe, createdAt }) => {
+const Message = ({ message, isMe, createdAt, user }) => {
   const [showReply, toggelReply] = useState(false);
 
   const userCardStyle = {
@@ -25,7 +25,7 @@ const Message = ({ message, isMe, createdAt }) => {
       onMouseLeave={handleMouseEnterLeave}
     >
       <div className="user-avatar">
-        <UserCard isOnline style={userCardStyle} />
+        <UserCard isOnline style={userCardStyle} userAvatarLetter = {user.last_name ? `${user.first_name[0]}${user.last_name[0]}` : user.first_name[0]} />
       </div>
       <div className="message">
         {message}
@@ -42,10 +42,11 @@ const Message = ({ message, isMe, createdAt }) => {
 
 Message.propTypes = {
   message: PropTypes.string.isRequired,
-  isMe: PropTypes.bool.isRequired
+  isMe: PropTypes.bool.isRequired,
+  user: PropTypes.object.isRequired
 };
 
-const MessageList = ({ messages, currentUser }) => {
+const MessageList = ({ messages, currentUser, user }) => {
   const bottomDiv = useRef();
   const contRef = useRef();
 
@@ -59,7 +60,7 @@ const MessageList = ({ messages, currentUser }) => {
     <Container ref={contRef}>
       {messages.map(({ id, message, publisher, createdAt }) => {
         const isMe = publisher === currentUser;
-        return <Message key={id} message={message} isMe={isMe} />;
+        return <Message key={id} message={message} isMe={isMe} user={user} />;
       })}
       <div ref={bottomDiv} />
     </Container>
@@ -68,7 +69,8 @@ const MessageList = ({ messages, currentUser }) => {
 
 MessageList.propTypes = {
   messages: PropTypes.array,
-  currentUser: PropTypes.string.isRequired
+  currentUser: PropTypes.string.isRequired,
+  user: PropTypes.object.isRequired
 };
 
 MessageList.defaultProps = {

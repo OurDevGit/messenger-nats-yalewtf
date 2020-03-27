@@ -36,6 +36,14 @@ export const USER_CONFIRMPASS_REQUEST = "[user] user confirmpass request";
 export const USER_CONFIRMPASS_SUCCESS = "[user] user confirmpass success";
 export const USER_CONFIRMPASS_FAILURE = "[user] user confirmpass failure";
 
+export const USER_RESENDCODE_REQUEST = "[user] user resendcode request";
+export const USER_RESENDCODE_SUCCESS = "[user] user resendcode success";
+export const USER_RESENDCODE_FAILURE = "[user] user resendcode failure";
+
+export const userResendcodeRequestAction = createAction(USER_RESENDCODE_REQUEST);
+export const userResendcodeSuccessAction = createAction(USER_RESENDCODE_SUCCESS);
+export const userResendcodeFailureAction = createAction(USER_RESENDCODE_FAILURE);
+
 export const userConfirmpassRequestAction = createAction(USER_CONFIRMPASS_REQUEST);
 export const userConfirmpassSuccessAction = createAction(USER_CONFIRMPASS_SUCCESS);
 export const userConfirmpassFailureAction = createAction(USER_CONFIRMPASS_FAILURE);
