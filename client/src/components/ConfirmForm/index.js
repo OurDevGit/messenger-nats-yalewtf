@@ -37,7 +37,6 @@ const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, userresendcode
         {
           values.username =  Sentuser.username;
         }
-        console.log(values)
         userconfirmpass(values);
       }
     });
@@ -61,7 +60,6 @@ const ConfirmForm = ({form, history , FailedMsg, userconfirmpass, userresendcode
   }
 
   useEffect(()=>{
-    console.log(confirmType)
     if(!Sentuser && !ResetPassFlag){
       history.push(routes.LOGIN)
     }

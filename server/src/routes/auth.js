@@ -14,11 +14,17 @@ router.post('/login', async (req, res) => {
       user_type: 'bot',
     });
   }
+  const user = await req.context.models.User.findByEmail(req.body.email);
   CognitoService.login(req.body, function(err, result) {
     if (err) {
+      if(user){
+        if(user.user_type === "aws_social")
+        {
+          return res.status(401).send({message: "ExistingSocial"})
+        }
+      }
       return res.status(404).send(err);
     }
-
     res.send(result);
   });
 });
@@ -50,38 +56,41 @@ router.post('/register', async (req, res) => {
       res.send(user);
     });
   }
-  // else{
-  //   const findSocialUser = await req.context.models.User.findByUsername(req.body.username);
-  //   const findregularUser = await req.context.models.User.findByUsername(req.body.email.replace(/@/g,"-").replace(/\./g, "_"));
-  //   if(findSocialUser){
-  //     req.body.user_type = 'aws_social';
-  //     return res.send(req.body)
-  //   }else{
-  //     if(!findregularUser){
-  //       var regularuserBody = req.body;
-  //       regularuserBody.username = req.body.email.replace(/@/g,"-").replace(/\./g, "_").toLowerCase();
-  //       regularuserBody.password = "AWSaws@*1994@at";
-  //       CognitoService.register(regularuserBody, async function(err, result) {
-  //         const regularuser = await req.context.models.User.create({
-  //           username: result.username.toLowerCase(),
-  //           first_name: req.body.given_name,
-  //           last_name: req.body.family_name,
-  //           email: req.body.email,
-  //           user_type: 'aws',
-  //         });
-  //       });
-  //     }
-  //     const user = await req.context.models.User.create({
-  //       username: req.body.username.toLowerCase(),
-  //       first_name: req.body.given_name,
-  //       last_name: req.body.family_name,
-  //       email: req.body.email,
-  //       user_type: 'aws_social'
-  //     });
-  //     return res.send(user)
-  //   }
-  // }
+  else{
+    const findSocialUser = await req.context.models.User.findByEmail(req.body.email);
+    if(findSocialUser){
+      return res.send(findSocialUser)
+    }else{
+      const user = await req.context.models.User.create({
+        username: req.body.username.toLowerCase(),
+        first_name: req.body.given_name,
+        last_name: req.body.family_name,
+        email: req.body.email,
+        user_type: 'aws_social'
+      });
+      return res.send(user)
+    }
+  }
 });
+
+router.post('/combineSocial', async(req, res) => {
+  const user = await req.context.models.User.findByEmail(req.body.email);
+  var Request = {
+    "username" : req.body.email.replace(/@/g,"-").replace(/\./g, "_"),
+    "first_name": user.given_name,
+    "last_name" : user.family_name,
+    "email": req.body.email,
+    "password": req.body.password
+  }
+  CognitoService.register(Request, async function(err, result) {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      else{
+        res.send(Request)
+      }
+  })
+})
 
 router.post('/confirm', async (req, res) => {
   CognitoService.confirmCode(req.body, function(err, result) {
@@ -93,7 +102,7 @@ router.post('/confirm', async (req, res) => {
 });
 
 router.post('/resetpass', async(req, res) => {
-  const user = await req.context.models.User.findByUsername(req.body.username);
+  const user = await req.context.models.User.findByEmail(req.body.email);
   if(user)
   {
       CognitoService.resetpass(req.body, function(err, result){
@@ -130,5 +139,7 @@ router.post('/signout', async(req, res) => {
   CognitoService.signout(req.body);
   return res.send({"message": "success"})
 })
+
+
 
 export default router;

@@ -22,6 +22,14 @@ const register = data =>
     })
     .then(result => result.data);
 
+const combineSocial = data =>
+  api
+    .callApi({
+      url: `${prefix}/combineSocial`,
+      method: "post",
+      data
+    })
+    .then(result => result.data);
 const signout = data =>
   api
     .callApi({
@@ -72,6 +80,7 @@ export default {
   login,
   register,
   resetpass,
+  combineSocial,
   confirmpass,
   resendcode,
   fetchMe,

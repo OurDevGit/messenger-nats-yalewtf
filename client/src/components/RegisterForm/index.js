@@ -67,6 +67,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
   };
 
   useEffect(()=>{
+    document.title = "Poocho messenger | Signup"
     if(AuthFlag){
       history.push(routes.CONFIRM);
     }
@@ -160,7 +161,7 @@ const RegisterForm = ({ form, userSignup, history , FailedMsg, AuthFlag, AuthLoa
           </Form.Item>
           <ActionCont>
             <SignupButton type="primary" htmlType="submit" loading={AuthLoading}>
-              Signt up with Email
+              Sign up with Email
             </SignupButton>
           </ActionCont>
           <ActionCont>

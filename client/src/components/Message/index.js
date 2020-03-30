@@ -58,6 +58,7 @@ const MessageComponent = ({ selectedUser, currentUser, messages, createMessage, 
   };
 
   useEffect(() => {
+    document.title = "Poocho messenger | Chat"
     if (nats.current) {
       nats.current.subscribe(`messages.${username}`, msg => {
         const newMsg = JSON.parse(msg);

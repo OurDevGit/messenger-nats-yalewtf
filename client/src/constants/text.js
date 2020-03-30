@@ -1,7 +1,7 @@
 export const Error_Email_Required = "Please input your email!";
 export const Error_Password_Required = "Please input your password!";
-export const Error_FirstName_Required = "Please input your First Name!";
-export const Error_LastName_Required = "Please input your Last Name!";
+export const Error_FirstName_Required = "Please input your first name!";
+export const Error_LastName_Required = "Please input your last name!";
 export const Error_ConfirmPass_Required = "Please input confirm password!";
 
 export const Error_Email_Invalid = "Please enter a valid email address";

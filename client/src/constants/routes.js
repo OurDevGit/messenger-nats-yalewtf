@@ -3,5 +3,6 @@ export default {
   LOGIN: "/login",
   SIGNUP: "/signup",
   MESSAGE: "/message",
-  CONFIRM: "/confirm"
+  CONFIRM: "/confirm",
+  RESETPASSWORD: "/resetpassword"
 };

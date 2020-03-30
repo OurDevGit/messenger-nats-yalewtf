@@ -9,7 +9,8 @@ const user = (sequelize, DataTypes) => {
     first_name: { type: DataTypes.STRING },
     last_name: { type: DataTypes.STRING },
     email: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      unique: true,
     },
     user_type: { type: DataTypes.STRING },
   });

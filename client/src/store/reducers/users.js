@@ -9,6 +9,9 @@ import {
   USER_LOGIN_FAILURE,
   USER_RESETPASS_SUCCESS,
   USER_RESETPASS_FAILURE,
+  USER_COMBINEWITHSOCIAL_REQUEST,
+  USER_COMBINEWITHSOCIAL_SUCCESS,
+  USER_COMBINEWITHSOCIAL_FAILURE,
   USER_CONFIRMPASS_SUCCESS,
   USER_CONFIRMPASS_FAILURE,
   FETCH_ME_REQUEST,
@@ -30,7 +33,8 @@ export const initialState = {
   AuthLoading: false,
   ResetPassFlag: false,
   Sentuser: null,
-  confirmType: null
+  confirmType: null,
+  LoginEmail: null
 };
 
 const usersReducer = createReducer(initialState, {
@@ -53,8 +57,9 @@ const usersReducer = createReducer(initialState, {
       state.FailedMsg = payload.data.message
     }
   },
-  [USER_LOGIN_REQUEST]: (state) => {
+  [USER_LOGIN_REQUEST]: (state, {payload}) => {
     state.AuthLoading = true;
+    state.LoginEmail  = payload.email; 
   },
   [USER_LOGIN_SUCCESS]: (state) => {
     state.AuthLoading = false;
@@ -66,7 +71,20 @@ const usersReducer = createReducer(initialState, {
     if(payload.status === 404)
     {
       state.FailedMsg = payload.data.message
+    }else if(payload.status === 401)
+    {
+      state.FailedMsg = payload.data.message;
     }
+  },
+  [USER_COMBINEWITHSOCIAL_REQUEST]: (state, payload) => {
+    state.AuthLoading = true;
+  },
+  [USER_COMBINEWITHSOCIAL_SUCCESS]: (state, payload) => {
+    state.AuthLoading = false;
+    state.AuthFlag =  true;
+    state.FailedMsg = "";
+    state.confirmType = "register";
+    state.Sentuser = payload.payload;
   },
   [USER_SIGN_OUT_SUCCESS]: (state) => {
     state.isAuthorized = false;

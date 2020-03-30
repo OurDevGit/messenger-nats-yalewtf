@@ -1,9 +1,10 @@
 import CognitoExpress from 'cognito-express';
+import CognitoService from '../services/AuthService';
 
 const cognitoExpress = new CognitoExpress({
   region: process.env.AWS_REGION,
   cognitoUserPoolId: process.env.AWS_POOL_ID,
-  tokenUse: 'access',
+  tokenUse: 'id',
   tokenExpiration: 3600000 * 24 * 7, // 7 days
 });
 
@@ -25,11 +26,11 @@ export const isAuthenticated = (paths = []) => (req, res, next) => {
         return res.status(401).send(err);
       }
       const { context } = req;
-      const { username } = response;
+      const { email } = response;
 
-      if (context && username) {
+      if (context && email) {
         const { models } = context;
-        const user = await models.User.findByUsername(username);
+        const user = await models.User.findByEmail(email);
 
         if (user) {
           req.context = {

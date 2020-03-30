@@ -1,5 +1,3 @@
-import e from 'express';
-
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 const poolData = {
   UserPoolId: process.env.AWS_POOL_ID,
@@ -58,7 +56,7 @@ const login = (body, callback) => {
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
   cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: function(result) {
-      const accesstoken = result.getAccessToken().getJwtToken();
+      const accesstoken = result.getIdToken().getJwtToken();
       const refreshtoken = result.getRefreshToken().getToken();
       callback(null, { accesstoken, refreshtoken });
       // var verificationCode = prompt('Please input verification code' ,'');
@@ -144,6 +142,23 @@ const emailAvailable = (body, callback) =>{
   }, { bypassCache: true })
 }
 
+const getUseDataByUsername = (body, callback) =>{
+  const {username} = body;
+  const userData = {
+    Username: username,
+    Pool: userPool,
+  };
+  var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+  cognitoUser.getSession(function(err, result){
+    if (err) {
+      callback(err);
+      return;
+    }
+    const email = result.idToken.payload.email
+    callback(null, {email});
+  }, { bypassCache: true })
+}
+
 const resetpass = (body, callback) =>{
   const {email} =  body;
   const userData = {
@@ -200,7 +215,7 @@ const confirmpass = (body, callback) =>{
           );
           cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function(result) {
-              const accesstoken = result.getAccessToken().getJwtToken();
+              const accesstoken = result.getIdToken().getJwtToken();
               const refreshtoken = result.getRefreshToken().getToken();
               callback(null, { accesstoken, refreshtoken });
             },
@@ -247,5 +262,6 @@ export default {
   confirmpass,
   resendcode,
   emailAvailable,
-  signout
+  signout,
+  getUseDataByUsername,
 };

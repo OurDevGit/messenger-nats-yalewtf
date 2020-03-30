@@ -31,8 +31,7 @@ Amplify.configure(aws_config);
 
 const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userResetpassFailure, userResetpass, ResetPassFlag, AuthLoading}) => {
   const { getFieldDecorator, validateFields, getFieldValue, getFieldError } = form;
-
-
+  var index = 0;
   const handleSubmit = e => {
     e.preventDefault();
     validateFields((err, values) => {
@@ -80,9 +79,8 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
   const handleClickRegister = () => {
     history.push(routes.SIGNUP);
   };
-
   useEffect(()=>{
-   
+    document.title = "Poocho messenger | Login"
     Auth.currentAuthenticatedUser({
       bypassCache: false
     })
@@ -94,13 +92,19 @@ const LoginForm = ({SignupRequest, form, userLogin, history , FailedMsg, userRes
         "family_name": user.signInUserSession.idToken.payload.family_name,
         "social": true
       }
-      SignupRequest(Request)
+        SignupRequest(Request);
     })
     .catch(err => console.log("err",err))
+  }, [])
+  useEffect(()=>{
 
     if(ResetPassFlag)
     {
       history.push(routes.CONFIRM)
+    }
+    if(FailedMsg === "ExistingSocial")
+    {
+      history.push(routes.RESETPASSWORD)
     }
   })
 

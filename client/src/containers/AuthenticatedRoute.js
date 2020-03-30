@@ -18,12 +18,12 @@ import { changeThemeAction } from "../store/actions/global";
  */
 
 const AuthenticatedRoute = ({ path, isAuthorized, token, component,location, ...rest }) => {
-
+  console.log(location.hash)
   if(location.hash !== "" && location.pathname === "/")
   {
     var paramtoken ={ 
-      "accesstoken": location.hash.split("&")[0].split('=')[1],
-      "refreshtoken": location.hash.split("&")[1].split('=')[1]
+      "accesstoken": location.hash.split("&")[1].split('=')[1],
+      "refreshtoken": location.hash.split("&")[0].split('=')[1]
     }
     storeToken(paramtoken)
   }
@@ -33,7 +33,7 @@ const AuthenticatedRoute = ({ path, isAuthorized, token, component,location, ...
     }
     return <Route {...rest} path={path} component={WithLayout(component)} />;
   }
-  if (path === routes.LOGIN || path === routes.SIGNUP || path === routes.CONFIRM) {
+  if (path === routes.LOGIN || path === routes.SIGNUP || path === routes.CONFIRM || path === routes.RESETPASSWORD) {
     return <Route {...rest} path={path} component={component} />;
   }
   return <Redirect to={routes.LOGIN} />;

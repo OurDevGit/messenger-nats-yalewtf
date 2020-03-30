@@ -28,6 +28,9 @@ import {
   USER_RESENDCODE_REQUEST,
   userResendcodeFailureAction,
   userResendcodeSuccessAction,
+  USER_COMBINEWITHSOCIAL_REQUEST,
+  userCombineWithSocialSuccessAction,
+  userCombineWithSocialFailureAction
 } from "../actions/users";
 import { receivedPrevMessages } from "../actions/messages";
 
@@ -71,6 +74,15 @@ function* signupSaga(action) {
       e.data.message = Error_UsernameExistsException;
     }
     yield put(userSignupFailureAction(e));
+  }
+}
+
+function* combineSocialSaga(action) {
+  try{
+    const response = yield call(userApi.combineSocial, action.payload);
+    yield put( userCombineWithSocialSuccessAction(response));
+  } catch(e) {
+    yield put( userCombineWithSocialSuccessAction(e));
   }
 }
 
@@ -186,6 +198,7 @@ export default function*() {
   yield takeLatest(USER_LOGIN_REQUEST, loginUserSaga);
   yield takeLatest(USER_SIGN_UP_REQUEST, signupSaga);
   yield takeLatest(USER_SIGN_OUT_REQUEST, signoutSaga);
+  yield takeLatest(USER_COMBINEWITHSOCIAL_REQUEST, combineSocialSaga);
   yield takeLatest(USER_RESETPASS_REQUEST, resetpassSaga);
   yield takeLatest(USER_CONFIRMPASS_REQUEST, confirmpassSaga);
   yield takeLatest(USER_RESENDCODE_REQUEST, resendcodeSaga);
